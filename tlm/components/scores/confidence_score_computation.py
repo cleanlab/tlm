@@ -1,0 +1,35 @@
+import numpy as np
+
+from tlm.components import Component
+from tlm.config.presets import WorkflowType
+from tlm.utils.scoring.confidence_scoring_utils import get_confidence_scores
+
+
+class ConfidenceScoreComputation(Component):
+    def __init__(self, workflow_type: WorkflowType, model: str, depends_on: list[Component] | None = None):
+        self.workflow_type = workflow_type
+        self.model = model
+        super().__init__(depends_on=depends_on)
+
+    async def execute(self):
+        consistency_scores = np.array(self.execution_context.get("consistency_scores"), dtype=np.float64)
+        indicator_scores = np.array(self.execution_context.get("indicator_scores"), dtype=np.float64)
+        self_reflection_scores = np.array(self.execution_context.get("self_reflection_scores"), dtype=np.float64)
+        perplexity_scores = self.execution_context.get("perplexity_scores")
+        use_perplexity_score = self.execution_context.get("use_perplexity_score")
+        prompt_evaluation_scores = self.execution_context.get("prompt_evaluation_scores", [])
+
+        confidence_scores = get_confidence_scores(
+            self.workflow_type,
+            self.model,
+            consistency_scores,
+            indicator_scores,
+            self_reflection_scores,
+            perplexity_scores,
+            use_perplexity_score,
+            prompt_evaluation_scores,
+        )
+
+        print(f"Calculated confidence scores: {confidence_scores}")
+
+        self.execution_context.add("confidence_scores", confidence_scores)
