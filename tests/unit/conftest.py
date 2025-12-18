@@ -1,4 +1,4 @@
-"""Pytest configuration and fixtures for tlm-core tests."""
+"""Pytest configuration and fixtures for tlm tests."""
 
 import os
 import logging

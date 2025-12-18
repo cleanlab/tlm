@@ -11,7 +11,7 @@ import sys
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
-# Add the tlm-core directory to Python path BEFORE importing tlm modules
+# Add the project directory to Python path BEFORE importing tlm modules
 tlm_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, tlm_core_path)
 
