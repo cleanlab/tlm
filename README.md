@@ -4,7 +4,7 @@ The [Trustworthy Language Model](https://cleanlab.ai/blog/trustworthy-language-m
 
 Automatically detect hallucinated/incorrect responses in: Q&A (RAG), Chatbots, Agents, Structured Outputs, Data Extraction, Tool Calling, Classification/Tagging, Data Labeling, and other LLM applications.
 
-Use TLM to: 
+Use TLM to:
 - Guardrail AI mistakes before they are served to user
 - Escalate cases where AI is untrustworthy to humans
 - Discover incorrect LLM (or human) generated outputs in datasets/logs

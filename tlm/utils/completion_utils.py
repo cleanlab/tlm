@@ -127,7 +127,7 @@ async def _generate_completion(
             failure_type = CompletionFailureType.RUNTIME_ERROR
 
         logger.error(
-            f"[{template.__class__.__name__}] error generating completion with LiteLLM: {e}\nusing litellm params: \n{litellm_params}\n{'='*100}"
+            f"[{template.__class__.__name__}] error generating completion with LiteLLM: {e}\nusing litellm params: \n{litellm_params}\n{'=' * 100}"
         )
         return CompletionFailure(type=failure_type, error=str(e))
 
