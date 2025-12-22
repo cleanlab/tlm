@@ -4,10 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tlm"
-version = "0.0.0"
+dynamic = ["version"]
 description = "Core functionality for TLM"
 readme = "README.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 dependencies = [
     "jsonpath-ng>=1.7.0",
     "litellm==1.71.3",
@@ -18,6 +20,9 @@ dependencies = [
     "pydantic>=2.9.2",
     "pydantic-settings>=2.0.0",
 ]
+
+[tool.hatch.version]
+path = "tlm/__about__.py"
 
 [project.optional-dependencies]
 dev = [
@@ -31,6 +36,22 @@ dev = [
     "pytest-recording>=0.13.2",
 ]
 
+[tool.hatch.envs.default]
+installer = "uv"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+    "mypy>=1.0.0",
+    "pytest>=8.3.3",
+    "pytest-recording>=0.13.2",
+]
+
+[[tool.hatch.envs.types.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13"]
+
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:tlm tests}"  # TODO: add --strict flag
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
@@ -39,6 +60,24 @@ log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 log_level = "INFO"
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+    "vcrpy>=8.0.0",
+    "pytest-asyncio>=1.3.0",
+]
+
+[tool.hatch.envs.hatch-test.env-vars]
+COVERAGE_FAIL_UNDER = ""
+
+[tool.hatch.envs.hatch-test.overrides]
+matrix.python.env-vars = [ { key = "COVERAGE_FAIL_UNDER", value = "--fail-under=90", if = [ "3.13" ] } ]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "coverage run -m pytest{env:HATCH_TEST_ARGS:} {args}"
+cov-combine = "coverage combine"
+cov-report = "coverage report {env:COVERAGE_FAIL_UNDER}"
 
 [tool.coverage.run]
 omit = [
@@ -49,11 +88,17 @@ omit = [
 show_missing = true
 fail_under = 90
 
+[tool.hatch.envs.hatch-static-analysis]
+config-path = "none"
+
 [tool.ruff]
 # The maximum line length that the formatter will allow.
 line-length = 120
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "INP"]
 # Ignore F401 (unused imports) for conftest.py files
-per-file-ignores = {"**/conftest.py" = ["F401"]}
+per-file-ignores = {"**/conftest.py" = ["F401"], "**/tests/**/*.py" = ["INP"]}
 
 [tool.isort]
 line_length = 120
