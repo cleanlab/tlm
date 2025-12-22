@@ -59,6 +59,7 @@ Then, install the hooks:
 pre-commit install
 ```
 
+[pre-commit]: https://pre-commit.com/
 [pipx]: https://pipx.pypa.io/
 
 ## Packaging
@@ -79,6 +80,6 @@ Alternatively, you can use `pip install -e /path/to/tlm` to install the package 
 
 ## Continuous integration
 
-Tests, type checking, and formatting/linting is [checked in the CI workflow][ci-workflow].
+Tests, type checking, and formatting/linting are [checked in the CI workflow][ci-workflow].
 
 [ci-workflow]: .github/workflows/ci.yml
