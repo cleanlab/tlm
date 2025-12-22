@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.13"
       - uses: pypa/hatch@install
-      - run: hatch run types.py${{ matrix.python}}:check
+      - run: hatch run types.py${{ matrix.python }}:check
   fmt:
     name: Format and lint
     runs-on: ubuntu-latest
