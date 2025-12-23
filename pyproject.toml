@@ -97,7 +97,7 @@ line-length = 120
 extend-exclude = ["notebooks"]
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "INP"]
+extend-select = ["INP"]
 # Ignore F401 (unused imports) for conftest.py files
 per-file-ignores = {"**/conftest.py" = ["F401"], "**/tests/**/*.py" = ["INP"]}
 
@@ -112,3 +112,17 @@ packages = ["tlm"]
 dev = [
     "mypy>=1.19.1",
 ]
+
+[tool.hatch.envs.docs]
+extra-dependencies = [
+  "mkdocs-jupyter>=0.25.1,<0.26",
+  "mkdocs-llmstxt>=0.4,<0.5",
+  "mkdocs-material[imaging]>=9.6,<10",
+  "mkdocs>=1.6.1,<2",
+  "mkdocstrings[python]>=0.30,<0.31",
+  "ruff>=0.14,<0.15",
+]
+
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build"
+serve = "mkdocs serve"

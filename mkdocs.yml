@@ -1,0 +1,110 @@
+site_name: TLM
+site_description: "Python library for the Trustworthy Language Model"
+
+repo_name: cleanlab/tlm
+repo_url: https://github.com/cleanlab/tlm
+
+exclude_docs: |
+  overrides/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: "img/logo_transparent_dark.png"
+  favicon: "img/logo_transparent.png"
+  features:
+    - content.code.copy
+    - toc.follow
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+extra:
+  generator: false
+
+plugins:
+  - search
+  - social
+  - mkdocstrings:
+      handlers:
+        python:
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
+          options:
+            docstring_style: google
+            show_source: true
+            inherited_members: true
+            show_symbol_type_toc: true
+            show_signature_annotations: true
+            separate_signature: true
+            overloads_only: true
+            signature_crossrefs: true
+            show_signature_type_parameters: true
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      ignore_h1_titles: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+watch:
+  - tlm
+  - docs
+  - mkdocs.yml
+
+nav:
+  - Home:
+    - Overview: index.md
+    - Cheat sheet / FAQ: faq.md
+    - Quickstart: tutorials/quickstart/index.ipynb
+  - Tutorials:
+    - Quickstart: tutorials/quickstart/index.ipynb
+    - Advanced Usage: tutorials/tlm_advanced/index.ipynb
+    - Custom Evaluation Criteria: tutorials/tlm_custom_eval/index.ipynb
+    - Chat Completions API: tutorials/tlm_chat_completion/index.ipynb
+    - OpenAI Responses API: tutorials/tlm_responses/index.ipynb
+    - Structured Outputs: tutorials/tlm_structured_outputs/index.ipynb
+    - Tool Calls: tutorials/tlm_tool_calls/index.ipynb
+  - Use Cases:
+    - Trustworthy RAG: use-cases/tlm_rag/index.ipynb
+    - Chatbot Guardrails: use-cases/tlm_guardrails/index.ipynb
+    - Trustworthy Data Extraction: use-cases/tlm_data_extraction/index.ipynb
+    - Trustworthy Agents (LangGraph Prebuilt): use-cases/tlm_existing_agent/index.ipynb
+    - Trustworthy Agents (Custom): use-cases/tlm_agents/index.ipynb
+    - Trustworthy Agents (OpenAI Agents SDK): use-cases/tlm_openai_agents/index.ipynb
+    - Trustworthy Classification: use-cases/zero_shot_classification/index.ipynb
+    - Yes/No Decisions: use-cases/tlm_yes_no_decision/index.ipynb
+    - Trust Scoring for LangChain: use-cases/tlm_langchain/index.ipynb
+    - Multi-turn Conversations: use-cases/tlm_conversation/index.ipynb
+    - Trustworthy Data Annotation: use-cases/tlm_annotation/index.ipynb
+    - Discover Bad Responses or Data: use-cases/instruction_tuning_data/index.ipynb
+    - Evals/Observability: use-cases/eval-obs-integrations.md
+  - API Reference:
+    - tlm: api/tlm.md
+  - Additional Cookbooks: https://github.com/cleanlab/cleanlab-tools
