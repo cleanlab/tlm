@@ -62,6 +62,18 @@ pre-commit install
 [pre-commit]: https://pre-commit.com/
 [pipx]: https://pipx.pypa.io/
 
+## Documentation
+
+You can preview the [MkDocs][mkdocs] site locally at <http://localhost:8000/> with:
+
+```bash
+hatch run docs:serve
+```
+
+This will live-reload the site as you make changes. You can run `hatch run docs:build` to build the compiled site into the `site/` directory.
+
+[mkdocs]: https://www.mkdocs.org/
+
 ## Packaging
 
 You can use [`hatch build`][hatch-build] to create build artifacts, a [source distribution ("sdist")][sdist] and a [built distribution ("wheel")][bdist].
