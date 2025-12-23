@@ -4,6 +4,7 @@ from tlm.config.base import Config, ConfigInput
 from tlm.config.presets import WorkflowType
 from tlm.inference import InferenceResult, tlm_inference
 from tlm.types import SemanticEval, CompletionParams
+from tlm.utils.chat_completion_validation import _validate_chat_completion_params
 
 
 async def inference(
@@ -21,6 +22,7 @@ async def inference(
         constrain_outputs=config_input.constrain_outputs,
     )
     config = Config.from_input(config_input, workflow_type)
+    _validate_chat_completion_params(openai_args, config.provider)
     return await tlm_inference(
         completion_params=openai_args,
         response=response,
