@@ -14,6 +14,7 @@ class APICredentials(BaseModel):
     api_base: str | None = None
     api_version: str | None = None
 
+
 OPENAI_PROVIDER = "openai"
 BEDROCK_PROVIDER = "bedrock"
 GOOGLE_PROVIDER = "google"

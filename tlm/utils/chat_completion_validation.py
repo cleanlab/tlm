@@ -65,6 +65,7 @@ VALID_BEDROCK_CHAT_COMPLETION_PARAMS: FrozenSet[str] = frozenset(
     }
 )
 
+
 def _resolve_valid_chat_completion_params(provider: str | None) -> FrozenSet[str]:
     if provider == OPENAI_PROVIDER:
         return VALID_OPENAI_CHAT_COMPLETION_PARAMS
@@ -94,6 +95,5 @@ def _validate_chat_completion_params(params: CompletionParams, provider: str | N
     invalid_keys = sorted(set(params.keys()) - valid_params)
     if invalid_keys:
         raise ValueError(
-            f"Unsupported chat completion parameter(s) for provider {provider}: "
-            + ", ".join(invalid_keys)
+            f"Unsupported chat completion parameter(s) for provider {provider}: " + ", ".join(invalid_keys)
         )
