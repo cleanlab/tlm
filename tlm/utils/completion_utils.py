@@ -140,7 +140,7 @@ async def _generate_completion(
             # Convert ChoiceLogprobs to dict to avoid Pydantic validation issues
             logprobs = ChoiceLogprobs.model_validate(
                 response.choices[0].logprobs.model_dump()
-                if hasattr(response.choices[0].logprobs, "model_dump")
+                if response.choices[0].logprobs and hasattr(response.choices[0].logprobs, "model_dump")
                 else response.choices[0].logprobs
             )
 
