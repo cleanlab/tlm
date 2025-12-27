@@ -40,6 +40,10 @@ GEMINI_2_0_FLASH_EXP = "gemini-2.0-flash-exp"
 # Azure Models
 PHI_4 = "phi-4"
 
+# DeepSeek Models
+DEEPSEEK_CHAT = "deepseek-chat"
+DEEPSEEK_REASONER = "deepseek-reasoner"
+
 OPENAI_MODELS: Set[str] = {
     GPT_3_5_TURBO_16K,
     GPT_4,
@@ -97,11 +101,17 @@ AZURE_MODELS: Set[str] = {
     PHI_4,
 }
 
+DEEPSEEK_MODELS: Set[str] = {
+    DEEPSEEK_CHAT,
+    DEEPSEEK_REASONER,
+}
+
 VALID_TLM_MODELS: Set[str] = {
     *OPENAI_MODELS,
     *BEDROCK_MODELS,
     *GOOGLE_MODELS,
     *AZURE_MODELS,
+    *DEEPSEEK_MODELS,
 }
 
 REASONING_MODELS: Set[str] = {
