@@ -34,15 +34,15 @@ NOVA_LITE = "nova-lite"
 NOVA_PRO = "nova-pro"
 
 # Google Models
-GEMINI_1_5_FLASH = "gemini-1.5-flash"
-GEMINI_2_0_FLASH_EXP = "gemini-2.0-flash-exp"
+GEMINI_1_5_FLASH = "gemini/gemini-1.5-flash"
+GEMINI_2_0_FLASH_EXP = "gemini/gemini-2.0-flash-exp"
 
 # Azure Models
 PHI_4 = "phi-4"
 
 # DeepSeek Models
-DEEPSEEK_CHAT = "deepseek-chat"
-DEEPSEEK_REASONER = "deepseek-reasoner"
+DEEPSEEK_CHAT = "deepseek/deepseek-chat"
+DEEPSEEK_REASONER = "deepseek/deepseek-reasoner"
 
 OPENAI_MODELS: Set[str] = {
     GPT_3_5_TURBO_16K,
