@@ -1,5 +1,6 @@
 from typing import ClassVar
 
+from tlm.config.models import MODELS_WITH_LOGPROBS
 from tlm.config.presets import ReasoningEffort
 from tlm.templates.parsers import REASONING_RESPONSE_PARSER, RESPONSE_PARSER
 
@@ -24,6 +25,7 @@ class ReferenceCompletionTemplate(CompletionTemplate):
         reasoning_effort: ReasoningEffort,
         constrain_outputs: list[str] | None = None,
         extract_answer: bool = False,
+        model: str | None = None,
         **kwargs,
     ):
         if extract_answer:
@@ -40,7 +42,7 @@ class ReferenceCompletionTemplate(CompletionTemplate):
             prompt_template=prompt_template,
             parse_patterns=parse_patterns,
             constrain_outputs=constrain_outputs,
-            use_logprobs=True,
+            use_logprobs=True if model in MODELS_WITH_LOGPROBS else False,
             extract_answer=extract_answer,
             **kwargs,
         )

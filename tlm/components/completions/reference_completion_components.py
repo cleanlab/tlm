@@ -66,6 +66,7 @@ class ReferenceCompletionGenerator(Component):
             reasoning_effort=reasoning_effort,
             constrain_outputs=constrain_outputs,
             extract_answer=modified_params is not None,
+            model=completion_params.get('model'),
         )
 
         super().__init__(depends_on=depends_on)
