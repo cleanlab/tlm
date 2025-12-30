@@ -98,7 +98,8 @@ def _build_completion_params(
     if temperature:
         litellm_params["temperature"] = temperature
 
-    litellm_params.update(template.get_completion_param_overrides(model_provider))
+    overrides = template.get_completion_param_overrides(model_provider)
+    litellm_params.update(overrides)
 
     if response_format_model:
         litellm_params["response_format"] = type_to_response_format_param(response_format_model)

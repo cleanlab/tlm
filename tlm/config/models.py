@@ -34,8 +34,15 @@ NOVA_LITE = "nova-lite"
 NOVA_PRO = "nova-pro"
 
 # Google Models
-GEMINI_1_5_FLASH = "gemini/gemini-1.5-flash"
-GEMINI_2_0_FLASH_EXP = "gemini/gemini-2.0-flash-exp"
+# Vertex AI models: use vertex_ai/ prefix (requires ADC/service account)
+GEMINI_1_5_FLASH = "vertex_ai/gemini-1.5-flash"
+GEMINI_1_5_PRO = "vertex_ai/gemini-1.5-pro"
+GEMINI_2_0_FLASH_EXP = "vertex_ai/gemini-2.0-flash-exp"
+
+# Google AI Studio models: use gemini/ prefix (requires API key from ai.google.dev)
+GEMINI_FLASH_API = "gemini/gemini-flash-latest"
+GEMINI_1_5_PRO_API = "gemini/gemini-1.5-pro-latest"
+GEMINI_2_0_FLASH_API = "gemini/gemini-2.0-flash-exp"
 
 # Azure Models
 PHI_4 = "phi-4"
@@ -93,8 +100,14 @@ BEDROCK_MODEL_TO_INFERENCE_PROFILE_ID: Dict[str, str] = {
 }
 
 GOOGLE_MODELS: Set[str] = {
+    # Vertex AI models (require ADC/service account)
     GEMINI_1_5_FLASH,
+    GEMINI_1_5_PRO,
     GEMINI_2_0_FLASH_EXP,
+    # Google AI Studio models (use with API keys)
+    GEMINI_FLASH_API,
+    GEMINI_1_5_PRO_API,
+    GEMINI_2_0_FLASH_API,
 }
 
 AZURE_MODELS: Set[str] = {

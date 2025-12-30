@@ -23,6 +23,7 @@ def find_project_root() -> Path:
 
 class ProviderAuthSettings(BaseSettings):
     OPENAI_API_KEY: str | None = None
+    GEMINI_API_KEY: str | None = None
     AWS_ACCESS_KEY_ID: str | None = None
     AWS_SECRET_ACCESS_KEY: str | None = None
     AWS_REGION: str | None = "us-east-1"
@@ -30,9 +31,12 @@ class ProviderAuthSettings(BaseSettings):
 
     @model_validator(mode="after")
     def set_default_api_key(self):
-        """Set DEFAULT_API_KEY to OPENAI_API_KEY if DEFAULT_API_KEY is not set."""
-        if not self.DEFAULT_API_KEY and self.OPENAI_API_KEY:
-            self.DEFAULT_API_KEY = self.OPENAI_API_KEY
+        """Set DEFAULT_API_KEY to OPENAI_API_KEY or GEMINI_API_KEY if DEFAULT_API_KEY is not set."""
+        if not self.DEFAULT_API_KEY:
+            if self.OPENAI_API_KEY:
+                self.DEFAULT_API_KEY = self.OPENAI_API_KEY
+            elif self.GEMINI_API_KEY:
+                self.DEFAULT_API_KEY = self.GEMINI_API_KEY
 
         if not self.DEFAULT_API_KEY:
             logger.warning("DEFAULT_API_KEY is not set")
