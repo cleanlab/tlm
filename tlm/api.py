@@ -20,7 +20,8 @@ async def inference(
         rag=(context is not None),
         constrain_outputs=config_input.constrain_outputs,
     )
-    config = Config.from_input(config_input, workflow_type)
+    model = openai_args.get("model")
+    config = Config.from_input(config_input, workflow_type, model)
     return await tlm_inference(
         completion_params=openai_args,
         response=response,

@@ -10,6 +10,10 @@ from tlm.config.presets import (
 from tlm.config.provider import ModelProvider
 from tlm.types import SimilarityMeasure
 
+from tlm.config.defaults import get_settings
+
+settings = get_settings()
+
 
 class ReferenceCompletionConfigInput(BaseModel):
     num_reference_completions: int | None = Field(
@@ -109,7 +113,7 @@ class BaseConfig(
 
 class Config(BaseConfig):
     @classmethod
-    def from_input(cls, input: ConfigInput, workflow_type: WorkflowType) -> "Config":
+    def from_input(cls, input: ConfigInput, workflow_type: WorkflowType, model: str | None) -> "Config":
         defaults_for_quality = DEFAULT_CONFIG_FOR_QUALITY[input.quality_preset]
         defaults_for_workflow = DEFAULT_CONFIG_FOR_QUALITY_AND_WORKFLOW[input.quality_preset].get(
             workflow_type
@@ -120,6 +124,7 @@ class Config(BaseConfig):
         params = {
             "reasoning_effort": reasoning_default,
             "use_prompt_evaluation": workflow_type == WorkflowType.RAG,
+            "model": model or settings.DEFAULT_MODEL,
             **defaults_for_quality,
             **defaults_for_workflow,
             "similarity_measure": SimilarityMeasure.for_workflow(workflow_type),
