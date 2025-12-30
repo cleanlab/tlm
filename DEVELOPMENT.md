@@ -78,9 +78,30 @@ This will live-reload the site as you make changes. You can run `hatch run docs:
 
 You can use [`hatch build`][hatch-build] to create build artifacts, a [source distribution ("sdist")][sdist] and a [built distribution ("wheel")][bdist].
 
+You can use [`hatch publish`][hatch-publish] if you want to manually publish build artifacts to [PyPI][pypi].
+
 [hatch-build]: https://hatch.pypa.io/latest/build/
 [sdist]: https://packaging.python.org/en/latest/glossary/#term-Source-Distribution-or-sdist
 [bdist]: https://packaging.python.org/en/latest/glossary/#term-Built-Distribution
+[hatch-publish]: https://hatch.pypa.io/latest/publish/
+[pypi]: https://pypi.org/
+
+### Automated releases
+
+Automated releases are handled by the [release workflow][release-workflow] which is triggered by pushing a new tag to the repository. To create a new release:
+
+1. Bump the version in `tlm/__about__.py`. You can use the [`hatch version`][hatch-version] command to do this.
+2. Ensure that the release notes are updated in [`CHANGELOG.md`][changelog]:
+   - You should update the `[Unreleased]` header to the new version and add a new `[Unreleased]` section at the top of the file.
+   - You should update the link for the `[Unreleased]` code and add a new link to the code diff for the new version.
+3. Create a PR and merge these changes into the `main` branch.
+4. After the PR is merged into `main`, create a new release tag by running `git tag v<output of hatch version>` (i.e. `git tag v0.0.1`).
+5. Push the tag to the repository by running `git push origin <tag>`.
+6. This will trigger the release workflow which will build the package, create a release on GitHub, and publish the package version to PyPI. The GitHub release notes will be automatically generated from the [changelog].
+
+[release-workflow]: .github/workflows/release.yml
+[hatch-version]: https://hatch.pypa.io/latest/version/#updating
+[changelog]: CHANGELOG.md
 
 ### How to build and install the package locally
 
