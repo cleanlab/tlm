@@ -312,7 +312,7 @@ async def run_completion_tests_for_bedrock_models(enabled=True) -> None:
     template = ReferenceCompletionTemplate.create(reasoning_effort=ReasoningEffort.NONE)
     for model in BEDROCK_MODELS:
         completion = await generate_completion(
-            template, template_kwargs={"prompt": "What is the capital of France?"}, model=model
+            template, template_kwargs={"prompt": "What is the capital of France?"}, completion_params={"model": model}
         )
         assert isinstance(completion, Completion)
         print(f"Completion content for {model}: {completion.message}")
@@ -323,7 +323,7 @@ async def run_all_tests():
     try:
         # Run the main tests
         success = await run_tests()
-        bedrock_result = await run_completion_tests_for_bedrock_models(enabled=False)
+        bedrock_result = await run_completion_tests_for_bedrock_models(enabled=True)
         # run_completion_tests_for_bedrock_models returns None when disabled, treat as success
         success = success and (bedrock_result is not False)
         return success
