@@ -20,7 +20,6 @@ class SemanticEvaluationScoreGenerator(Component):
         evals: list[SemanticEval],
         reasoning_effort: ReasoningEffort,
         temperature: float,
-        model: str,
         **kwargs,
     ):
         query_required = any(eval.query_identifier is not None for eval in evals)
@@ -37,7 +36,6 @@ class SemanticEvaluationScoreGenerator(Component):
         self.reasoning_effort = reasoning_effort
         self.max_explanation_words = REASONING_EFFORT_TO_MAX_EXPLANATION_WORDS[reasoning_effort]
         self.temperature = temperature
-        self.model = model
         super().__init__(**kwargs)
 
     async def execute(self) -> None:
@@ -72,7 +70,6 @@ class SemanticEvaluationScoreGenerator(Component):
                         "max_explanation_words": self.max_explanation_words,
                     },
                     temperature=self.temperature,
-                    model=self.model,
                 )
             )
             for eval, reference_answer in params

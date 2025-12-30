@@ -42,7 +42,6 @@ class PipelineFactory:
                 PromptEvaluationCompletionGenerator(
                     prompt=user_prompt,
                     temperature=config.prompt_evaluation_temperature,
-                    model=config.model,
                 )
             )
         else:

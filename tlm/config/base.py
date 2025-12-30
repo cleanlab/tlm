@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from typing import ClassVar
 
 from tlm.config.presets import (
     DEFAULT_CONFIG_FOR_QUALITY,
@@ -76,7 +75,6 @@ class SemanticEvalsConfig(BaseModel):
 
 
 class ModelProviderInput(BaseModel):
-    model: str | None = None
     provider: str | None = None
     api_base: str | None = None
     api_key: str | None = None
@@ -110,8 +108,6 @@ class BaseConfig(
 
 
 class Config(BaseConfig):
-    _DEFAULT_MODEL: ClassVar[str] = "gpt-4.1-mini"
-
     @classmethod
     def from_input(cls, input: ConfigInput, workflow_type: WorkflowType) -> "Config":
         defaults_for_quality = DEFAULT_CONFIG_FOR_QUALITY[input.quality_preset]
@@ -123,7 +119,6 @@ class Config(BaseConfig):
         )
         params = {
             "reasoning_effort": reasoning_default,
-            "model": cls._DEFAULT_MODEL,
             "use_prompt_evaluation": workflow_type == WorkflowType.RAG,
             **defaults_for_quality,
             **defaults_for_workflow,
