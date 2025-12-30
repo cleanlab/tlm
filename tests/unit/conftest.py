@@ -6,6 +6,11 @@ from pathlib import Path
 import pytest
 from dotenv import load_dotenv
 import litellm
+import asyncio
+import contextlib
+from collections.abc import Coroutine, Iterator
+from importlib.metadata import version
+from unittest.mock import patch
 import vcr  # type: ignore[import-untyped]
 
 from tests.helpers.completion_template_fixtures import (
@@ -39,6 +44,54 @@ def setup_logging():
             datefmt="%Y-%m-%d %H:%M:%S",
         )
     yield
+
+
+@pytest.fixture(autouse=True, scope="session")
+def patch_litellm_logging_worker_for_race_condition() -> Iterator[None]:
+    """
+    Patch litellm's GLOBAL_LOGGING_WORKER for asyncio functionality.
+
+    SEE: https://github.com/BerriAI/litellm/issues/16518
+    SEE: https://github.com/BerriAI/litellm/issues/14521
+    """
+    try:
+        from litellm.litellm_core_utils import logging_worker
+    except ImportError:
+        if tuple(int(x) for x in version(litellm.__name__).split(".")) < (1, 76, 0):
+            # Module didn't exist before https://github.com/BerriAI/litellm/pull/13905
+            yield
+            return
+        raise
+
+    class NoOpLoggingWorker:
+        """No-op worker that executes callbacks immediately without queuing."""
+
+        def start(self) -> None:
+            pass
+
+        def enqueue(self, coroutine: Coroutine) -> None:
+            # Execute immediately in current loop instead of queueing,
+            # and do nothing if there's no current loop
+            with contextlib.suppress(RuntimeError):
+                # This logging task is fire-and-forget
+                asyncio.create_task(  # type: ignore[unused-awaitable]  # noqa: RUF006
+                    coroutine
+                )
+
+        def ensure_initialized_and_enqueue(self, async_coroutine: Coroutine) -> None:
+            self.enqueue(async_coroutine)
+
+        async def stop(self) -> None:
+            pass
+
+        async def flush(self) -> None:
+            pass
+
+        async def clear_queue(self) -> None:
+            pass
+
+    with patch.object(logging_worker, "GLOBAL_LOGGING_WORKER", NoOpLoggingWorker()):
+        yield
 
 
 @pytest.fixture(scope="function")

@@ -133,10 +133,11 @@ async def _generate_completion(
 
         if litellm_params.get("logprobs") and hasattr(response.choices[0], "logprobs"):
             # Convert ChoiceLogprobs to dict to avoid Pydantic validation issues
+            choice_logprobs = response.choices[0].logprobs
             logprobs = ChoiceLogprobs.model_validate(
-                response.choices[0].logprobs.model_dump()
-                if hasattr(response.choices[0].logprobs, "model_dump")
-                else response.choices[0].logprobs
+                choice_logprobs.model_dump()
+                if choice_logprobs and hasattr(choice_logprobs, "model_dump")
+                else choice_logprobs
             )
 
             if raw_message_content := _get_raw_message_content(logprobs):
