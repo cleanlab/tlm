@@ -41,15 +41,13 @@ async def generate_completion(
     completion_params: CompletionParams = {},
     template_kwargs: dict[str, Any] = {},
     temperature: float | None = None,
-    model: str | None = None,
     response_format_model: type[BaseModel] | None = None,
 ) -> Completion | CompletionFailure:
-    litellm_params = _build_completion_params(
+    litellm_params = _build_litellm_params(
         template,
         completion_params,
         template_kwargs,
         temperature,
-        model,
         response_format_model,
     )
 
@@ -72,12 +70,11 @@ async def generate_completion(
     return completion
 
 
-def _build_completion_params(
+def _build_litellm_params(
     template: CompletionTemplate,
     completion_params: CompletionParams,
     template_kwargs: dict[str, Any] = {},
     temperature: float | None = None,
-    model: str | None = None,
     response_format_model: type[BaseModel] | None = None,
 ) -> CompletionParams:
     litellm_params = copy.deepcopy(completion_params)
@@ -85,11 +82,9 @@ def _build_completion_params(
     input_messages: list[dict[str, str]] = litellm_params.get("messages", [])
     litellm_params["messages"] = template.format_messages(messages=input_messages, **template_kwargs)
 
-    if model is None:
-        model = completion_params.get("model")
+    model = completion_params.get("model")
 
-    model_provider = ModelProvider(model=model) if model else None
-    model_provider = model_provider or settings.default_model_provider
+    model_provider = ModelProvider(model=model) if model else settings.default_model_provider
     litellm_params["model"] = model_provider.model
 
     if "max_tokens" not in litellm_params:
@@ -139,10 +134,11 @@ async def _generate_completion(
 
         if litellm_params.get("logprobs") and hasattr(response.choices[0], "logprobs"):
             # Convert ChoiceLogprobs to dict to avoid Pydantic validation issues
+            choice_logprobs = response.choices[0].logprobs
             logprobs = ChoiceLogprobs.model_validate(
-                response.choices[0].logprobs.model_dump()
-                if hasattr(response.choices[0].logprobs, "model_dump")
-                else response.choices[0].logprobs
+                choice_logprobs.model_dump()
+                if choice_logprobs and hasattr(choice_logprobs, "model_dump")
+                else choice_logprobs
             )
 
             if raw_message_content := _get_raw_message_content(logprobs):

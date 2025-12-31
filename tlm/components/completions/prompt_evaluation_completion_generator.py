@@ -6,10 +6,9 @@ from tlm.utils.completion_utils import generate_completion
 
 
 class PromptEvaluationCompletionGenerator(Component):
-    def __init__(self, prompt: str, temperature: float | None, model: str, **kwargs):
+    def __init__(self, prompt: str, temperature: float | None, **kwargs):
         self.prompt = prompt
         self.temperature = temperature
-        self.model = model
         self.template = PromptAnswerabilityCompletionTemplate.create()
         super().__init__(**kwargs)
 
@@ -24,7 +23,6 @@ class PromptEvaluationCompletionGenerator(Component):
                         "prompt": self.prompt,
                     },
                     temperature=self.temperature,
-                    model=self.model,
                 )
             )
         ]
