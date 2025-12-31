@@ -7,6 +7,7 @@ import re
 from pydantic import BaseModel
 from openai.lib._parsing._completions import type_to_response_format_param
 
+import litellm
 import litellm.exceptions
 from litellm import Choices, acompletion
 from litellm.files.main import ModelResponse
@@ -28,6 +29,9 @@ from tlm.utils.constrain_outputs_utils import constrain_output
 from tlm.utils.parse_utils import get_parsed_answer_tokens_confidence
 from tlm.utils.scoring.per_field_scoring_utils import extract_per_field_reflection_metadata
 from tlm.utils.math_utils import harmonic_mean
+
+litellm.suppress_debug_info = True
+litellm.set_verbose = False
 
 settings = get_settings()
 
@@ -54,7 +58,7 @@ async def generate_completion(
     completion = await _generate_completion(litellm_params, template)
 
     if isinstance(completion, Completion):
-        log_msg = f"""Generated {template.__class__.__name__} completion for messages:
+        log_msg = f"""Generated {template.__class__.__name__} completion for model {litellm_params["model"]} with messages:
     {json.dumps(litellm_params["messages"], indent=2)}
 
     Content:
