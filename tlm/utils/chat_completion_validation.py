@@ -1,7 +1,5 @@
 """Validation helpers for chat completion parameter dictionaries."""
 
-from __future__ import annotations
-
 # from litellm import get_supported_openai_params
 from typing import Any, Callable, FrozenSet, Mapping
 
