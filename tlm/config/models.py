@@ -34,12 +34,9 @@ NOVA_LITE = "nova-lite"
 NOVA_PRO = "nova-pro"
 
 # Google Models
-# Vertex AI models: use vertex_ai/ prefix (requires ADC/service account)
 GEMINI_1_5_FLASH = "vertex_ai/gemini-1.5-flash"
 GEMINI_1_5_PRO = "vertex_ai/gemini-1.5-pro"
 GEMINI_2_0_FLASH_EXP = "vertex_ai/gemini-2.0-flash-exp"
-
-# Google AI Studio models: use gemini/ prefix (requires API key from ai.google.dev)
 GEMINI_FLASH_API = "gemini/gemini-flash-latest"
 GEMINI_1_5_PRO_API = "gemini/gemini-1.5-pro-latest"
 GEMINI_2_0_FLASH_API = "gemini/gemini-2.0-flash-exp"
@@ -114,18 +111,12 @@ AZURE_MODELS: Set[str] = {
     PHI_4,
 }
 
-DEEPSEEK_MODELS: Set[str] = {
-    DEEPSEEK_CHAT,
-    DEEPSEEK_REASONER,
-}
+DEEPSEEK_MODEL_PREFIX = "deepseek/"
 
-VALID_TLM_MODELS: Set[str] = {
-    *OPENAI_MODELS,
-    *BEDROCK_MODELS,
-    *GOOGLE_MODELS,
-    *AZURE_MODELS,
-    *DEEPSEEK_MODELS,
-}
+# Requires API key from ai.google.dev
+GEMINI_MODEL_PREFIX = "gemini/"
+# Requires ADC/service account
+VERTEX_AI_MODEL_PREFIX = "vertex_ai/"
 
 REASONING_MODELS: Set[str] = {
     O1_PREVIEW,

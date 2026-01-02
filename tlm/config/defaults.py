@@ -4,7 +4,7 @@ import logging
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from tlm.config.models import GPT_4_1_MINI, GPT_4_1_NANO
+from tlm.config.models import DEFAULT_MODEL
 from tlm.config.provider import ModelProvider
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ def find_project_root() -> Path:
 class ProviderAuthSettings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     GEMINI_API_KEY: str | None = None
+    DEEPSEEK_API_KEY: str | None = None
     AWS_ACCESS_KEY_ID: str | None = None
     AWS_SECRET_ACCESS_KEY: str | None = None
     AWS_REGION: str | None = "us-east-1"
@@ -31,12 +32,14 @@ class ProviderAuthSettings(BaseSettings):
 
     @model_validator(mode="after")
     def set_default_api_key(self):
-        """Set DEFAULT_API_KEY to OPENAI_API_KEY or GEMINI_API_KEY if DEFAULT_API_KEY is not set."""
+        """Set DEFAULT_API_KEY to OPENAI_API_KEY if DEFAULT_API_KEY is not set."""
         if not self.DEFAULT_API_KEY:
-            if self.OPENAI_API_KEY:
+            if self.DEFAULT_PROVIDER == "openai" and self.OPENAI_API_KEY:
                 self.DEFAULT_API_KEY = self.OPENAI_API_KEY
-            elif self.GEMINI_API_KEY:
+            elif self.DEFAULT_PROVIDER == "gemini" and self.GEMINI_API_KEY:
                 self.DEFAULT_API_KEY = self.GEMINI_API_KEY
+            elif self.DEFAULT_PROVIDER == "deepseek" and self.DEEPSEEK_API_KEY:
+                self.DEFAULT_API_KEY = self.DEEPSEEK_API_KEY
 
         if not self.DEFAULT_API_KEY:
             logger.warning("DEFAULT_API_KEY is not set")
@@ -45,8 +48,8 @@ class ProviderAuthSettings(BaseSettings):
 
 
 class ModelSettings(BaseSettings):
-    DEFAULT_MODEL: str = GPT_4_1_MINI
-    LOWEST_LATENCY_MODEL: str = GPT_4_1_NANO
+    DEFAULT_MODEL: str = DEFAULT_MODEL
+    DEFAULT_PROVIDER: str = "openai"
     TOP_LOGPROBS: int = 5
 
 
@@ -75,7 +78,7 @@ class Settings(
 
     @property
     def default_model_provider(self) -> ModelProvider:
-        return ModelProvider(model=self.DEFAULT_MODEL, api_key=self.DEFAULT_API_KEY, provider="openai")
+        return ModelProvider(model=self.DEFAULT_MODEL, api_key=self.DEFAULT_API_KEY, provider=self.DEFAULT_PROVIDER)
 
 
 @lru_cache
