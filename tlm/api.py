@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING, cast
+from typing import Any, cast
 
 import asyncio
 import sys
@@ -8,9 +8,6 @@ from tlm.config.base import Config, ConfigInput
 from tlm.config.presets import WorkflowType
 from tlm.inference import InferenceResult, tlm_inference
 from tlm.types import SemanticEval
-
-if TYPE_CHECKING:
-    from openai.types.chat import ChatCompletion
 
 
 def is_notebook() -> bool:
@@ -23,7 +20,6 @@ def is_notebook() -> bool:
 
 
 class TLM:
-
     def __init__(
         self,
         config_input: ConfigInput = ConfigInput(),
@@ -62,7 +58,7 @@ class TLM:
     def score(
         self,
         *,
-        response: "ChatCompletion" | dict[str, Any],
+        response: ChatCompletion | dict[str, Any],
         context: str | None = None,
         evals: list[SemanticEval] | None = None,
         **openai_kwargs: Any,
