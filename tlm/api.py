@@ -1,7 +1,8 @@
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, cast
 
 import asyncio
 import sys
+from openai.types.chat import ChatCompletion
 
 from tlm.config.base import Config, ConfigInput
 from tlm.config.presets import WorkflowType
@@ -22,10 +23,11 @@ def is_notebook() -> bool:
 
 
 class TLM:
+
     def __init__(
         self,
         config_input: ConfigInput = ConfigInput(),
-        evals: list[SemanticEval] = None,
+        evals: list[SemanticEval] | None = None,
     ):
         self.config_input = config_input
         self.evals = evals
@@ -60,15 +62,13 @@ class TLM:
     def score(
         self,
         *,
-        response: "ChatCompletion",
+        response: "ChatCompletion" | dict[str, Any],
         context: str | None = None,
         evals: list[SemanticEval] | None = None,
         **openai_kwargs: Any,
     ) -> InferenceResult:
-        from openai.types.chat import ChatCompletion
-
         if isinstance(response, ChatCompletion):
-            response = response.model_dump()
+            response = cast(dict[str, Any], response.model_dump())
 
         return self._event_loop.run_until_complete(
             self._async_inference(
