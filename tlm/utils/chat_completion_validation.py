@@ -19,7 +19,7 @@ def _validate_messages_param(messages: Any) -> None:
 
     for index, message in enumerate(messages):
         if not isinstance(message, dict):
-            raise ValueError(f"messages[{index}] must be a dictionary with 'role' and 'content'.")
+            raise ValueError(f"messages[{index}] must be a dictionary.")
 
         role = message.get("role")
         content = message.get("content")
