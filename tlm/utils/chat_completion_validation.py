@@ -1,6 +1,5 @@
 """Validation helpers for chat completion parameter dictionaries."""
 
-# from litellm import get_supported_openai_params
 from typing import Any, Callable, FrozenSet, Mapping
 
 from tlm.types.base import CompletionParams
@@ -29,8 +28,10 @@ def _validate_messages_param(messages: Any) -> None:
 
         if content is None or not isinstance(content, str):
             function_call = message.get("function_call")
-            if role != "assistant" or function_call is None:
-                raise ValueError(f"messages[{index}]['content'] must be a string.")
+            if role != "assistant":
+                raise ValueError(f"Non-assistant message at index {index} must have content.")
+            if function_call is None:
+                raise ValueError(f"Assistant message at index {index} must have content or a function call.")
 
 
 REQUIRED_PARAM_VALIDATORS: Mapping[str, ParamValidator] = {
