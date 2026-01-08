@@ -71,6 +71,8 @@ jobs:
              "^(https:\\/\\/github\\.com/.*)#.*$": "\\1"}
           allow_missing_href: true
           ignore_url: |
+            https://github.com/cleanlab/tlm
+            https://towardsdatascience.com
             https://fonts.gstatic.com
             https://platform.openai.com/docs/guides/structured-outputs
             https://openai.com/index/api-prompt-caching/
