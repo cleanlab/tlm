@@ -81,7 +81,6 @@ watch:
 nav:
   - Home:
     - Overview: index.md
-    - Cheat sheet / FAQ: faq.md
     - Quickstart: tutorials/quickstart/index.ipynb
   - Tutorials:
     - Quickstart: tutorials/quickstart/index.ipynb
@@ -91,20 +90,6 @@ nav:
     - OpenAI Responses API: tutorials/tlm_responses/index.ipynb
     - Structured Outputs: tutorials/tlm_structured_outputs/index.ipynb
     - Tool Calls: tutorials/tlm_tool_calls/index.ipynb
-  - Use Cases:
-    - Trustworthy RAG: use-cases/tlm_rag/index.ipynb
-    - Chatbot Guardrails: use-cases/tlm_guardrails/index.ipynb
-    - Trustworthy Data Extraction: use-cases/tlm_data_extraction/index.ipynb
-    - Trustworthy Agents (LangGraph Prebuilt): use-cases/tlm_existing_agent/index.ipynb
-    - Trustworthy Agents (Custom): use-cases/tlm_agents/index.ipynb
-    - Trustworthy Agents (OpenAI Agents SDK): use-cases/tlm_openai_agents/index.ipynb
-    - Trustworthy Classification: use-cases/zero_shot_classification/index.ipynb
-    - Yes/No Decisions: use-cases/tlm_yes_no_decision/index.ipynb
-    - Trust Scoring for LangChain: use-cases/tlm_langchain/index.ipynb
-    - Multi-turn Conversations: use-cases/tlm_conversation/index.ipynb
-    - Trustworthy Data Annotation: use-cases/tlm_annotation/index.ipynb
-    - Discover Bad Responses or Data: use-cases/instruction_tuning_data/index.ipynb
-    - Evals/Observability: use-cases/eval-obs-integrations.md
   - API Reference:
     - tlm: api/tlm.md
   - Additional Cookbooks: https://github.com/cleanlab/cleanlab-tools
