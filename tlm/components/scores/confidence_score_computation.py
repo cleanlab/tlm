@@ -1,8 +1,11 @@
 import numpy as np
+import logging
 
 from tlm.components import Component
 from tlm.config.presets import WorkflowType
 from tlm.utils.scoring.confidence_scoring_utils import get_confidence_scores
+
+logger = logging.getLogger(__name__)
 
 
 class ConfidenceScoreComputation(Component):
@@ -30,6 +33,6 @@ class ConfidenceScoreComputation(Component):
             prompt_evaluation_scores,
         )
 
-        print(f"Calculated confidence scores: {confidence_scores}")
+        logger.info(f"Calculated confidence scores: {confidence_scores}")
 
         self.execution_context.add("confidence_scores", confidence_scores)

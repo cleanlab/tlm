@@ -3,9 +3,12 @@ from typing import Dict, List
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+import logging
 
 from tlm.config.presets import WorkflowType
 from tlm.config.score_weights import COMPONENT_SCORE_WEIGHTS, DEFAULT_MODEL, PERPLEXITY_SCORE_WEIGHT
+
+logger = logging.getLogger(__name__)
 
 
 class WeightedScore:
@@ -70,12 +73,12 @@ def _generate_total_scores(
 
     total_scores: List[float] = []
 
-    print("Generating confidence scores with scores:")
-    print(f"-- Consistency scores: {consistency_scores}")
-    print(f"-- Indicator scores: {indicator_scores}")
-    print(f"-- Self reflection scores: {self_reflection_scores}")
-    print(f"-- Perplexity scores: {perplexity_scores}")
-    print(f"-- Prompt eval scores: {prompt_eval_scores}")
+    logger.info("Generating confidence scores with scores:")
+    logger.info(f"-- Consistency scores: {consistency_scores}")
+    logger.info(f"-- Indicator scores: {indicator_scores}")
+    logger.info(f"-- Self reflection scores: {self_reflection_scores}")
+    logger.info(f"-- Perplexity scores: {perplexity_scores}")
+    logger.info(f"-- Prompt eval scores: {prompt_eval_scores}")
 
     scores = pd.DataFrame(
         {

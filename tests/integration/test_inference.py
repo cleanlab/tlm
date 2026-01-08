@@ -19,7 +19,7 @@ from tlm.config.base import ConfigInput, ReasoningEffort  # noqa: E402
 from tlm.config.models import BEDROCK_MODELS  # noqa: E402
 from tlm.config.presets import QualityPreset  # noqa: E402
 from tlm.templates import ReferenceCompletionTemplate  # noqa: E402
-from tlm.api import inference  # noqa: E402
+from tlm import TLM  # noqa: E402
 from tlm.utils.completion_utils import generate_completion  # noqa: E402
 from tlm.types import Completion, SemanticEval, SimilarityMeasure  # noqa: E402
 
@@ -51,7 +51,8 @@ async def run_inference_test(kwargs: dict, enabled=True) -> bool:
         print("🔄 Running inference...")
         print("   This may take a moment as it makes API calls...")
 
-        response = await inference(**kwargs)
+        tlm = TLM()
+        response = tlm.create(**kwargs)
 
         print("✅ Inference completed!")
         print("\n📊 Response:")
