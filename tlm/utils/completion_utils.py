@@ -69,7 +69,7 @@ async def generate_completion(
     {json.dumps(completion.response_fields, indent=2)}
     ===============================================
     """
-        print(log_msg)
+        logger.info(log_msg)
 
     return completion
 
