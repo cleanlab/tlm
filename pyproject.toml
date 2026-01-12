@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "tlm"
+name = "trustworthy-llm"
 dynamic = ["version"]
 description = "Core functionality for TLM"
 readme = "README.md"
