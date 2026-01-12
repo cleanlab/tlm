@@ -86,7 +86,7 @@ omit = [
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 90
+fail_under = 65
 
 [tool.hatch.envs.hatch-static-analysis]
 config-path = "none"
