@@ -20,10 +20,10 @@ def is_notebook() -> bool:
 
 
 class TLM:
-    """Trustworthy Language Model (TLM) for generating and scoring LLM responses.
+    """Trustworthy Language Model (TLM) for scoring the trustworthines of responses from any LLM in real-time.
 
-    TLM provides methods to create LLM completions with confidence scoring,
-    as well as to score existing responses.
+    TLM can either score responses that you have already generated from your own LLM,
+    or simultaneously generate responses and score their trustworthiness.
     """
 
     def __init__(
@@ -62,10 +62,10 @@ class TLM:
         evals: list[SemanticEval] | None = None,
         **openai_kwargs: Any,
     ) -> InferenceResult:
-        """Create a new LLM completion with confidence scoring and quality checks.
+        """Create a new LLM completion and then score its trustworthiness.
 
-        This method generates a completion using the provided OpenAI-compatible parameters,
-        then applies TLM's quality assessment pipeline to produce a confidence score.
+        This method generates a completion using the provided OpenAI-API-compatible arguments,
+        and then runs TLM to produce a trustworthiness score for this completion.
 
         Args:
             context: Optional context string for RAG workflows. When provided, enables
@@ -83,11 +83,11 @@ class TLM:
         Returns:
             InferenceResult object containing:
                 - response: The generated response (string or dict for structured outputs)
-                - confidence_score: Confidence score between 0 and 1
+                - Trustworthiness_score: Trustworthiness score between 0 and 1
                 - usage: Token usage information
                 - metadata: Additional metadata (e.g., per-field scores for structured outputs)
                 - evals: Dictionary of additional evaluation scores (if evals are provided)
-                - explanation: Optional explanation of the confidence score
+                - explanation: Optional explanation for the trustworthiness score
         """
         return self._event_loop.run_until_complete(
             self._async_inference(
@@ -105,9 +105,7 @@ class TLM:
         evals: list[SemanticEval] | None = None,
         **openai_kwargs: Any,
     ) -> InferenceResult:
-        """Score an existing LLM response with confidence and quality metrics.
-
-        This method evaluates a pre-existing LLM response using TLM's quality assessment pipeline.
+        """Score the trusworthiness of an existing LLM response/completion (from any LLM, or even from a human-writer).
 
         Args:
             response: The existing response to score. Can be either an OpenAI
@@ -123,11 +121,11 @@ class TLM:
         Returns:
             InferenceResult containing:
                 - response: The original response (preserved from input)
-                - confidence_score: Confidence score between 0 and 1
+                - trustworthiness_score: Trustworthiness score between 0 and 1
                 - usage: Token usage information
                 - metadata: Additional metadata (e.g., per-field scores for structured outputs)
                 - evals: Dictionary of additional evaluation scores (if evals are provided)
-                - explanation: Optional explanation of the confidence score
+                - explanation: Optional explanation for the trustworthiness score
         """
         if isinstance(response, ChatCompletion):
             response = {"chat_completion": response.model_dump()}
