@@ -5,7 +5,7 @@ from .completions.reference_completion_components import ReferenceCompletionForm
 from .completions.self_reflection_completion_generator import SelfReflectionCompletionGenerator
 from .semantic_evaluation_score_generator import SemanticEvaluationScoreGenerator
 from .response_assembly import ResponseAssembly
-from .scores.confidence_score_computation import ConfidenceScoreComputation
+from .scores.trustworthiness_score_computation import TrustworthinessScoreComputation
 from .scores.consistency_score_computation import ConsistencyScoreComputation
 from .scores.perplexity_score_computation import PerplexityScoreComputation
 from .scores.prompt_evaluation_score_extraction import PromptEvaluationScoreExtraction
@@ -18,7 +18,7 @@ __all__ = [
     "ObservedConsistencyCompletionGenerator",
     "SelfReflectionCompletionGenerator",
     "ConsistencyScoreComputation",
-    "ConfidenceScoreComputation",
+    "TrustworthinessScoreComputation",
     "PerplexityScoreComputation",
     "SelfReflectionScoreComputation",
     "ResponseAssembly",

@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from tlm.components import (
-    ConfidenceScoreComputation,
+    TrustworthinessScoreComputation,
     ConsistencyScoreComputation,
     ObservedConsistencyCompletionGenerator,
     PerplexityScoreComputation,
@@ -140,8 +140,8 @@ class PipelineFactory:
         else:
             prompt_evaluation_score_extraction = None
 
-        confidence_score_computation = pipeline.add(
-            ConfidenceScoreComputation(
+        trustworthiness_score_computation = pipeline.add(
+            TrustworthinessScoreComputation(
                 workflow_type=config.workflow_type,
                 model=config.model,
                 depends_on=[
@@ -165,7 +165,7 @@ class PipelineFactory:
                 depends_on=[
                     component
                     for component in [
-                        confidence_score_computation,
+                        trustworthiness_score_computation,
                         evals_not_requiring_response_generator,
                         evals_requiring_response_generator,
                     ]

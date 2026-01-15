@@ -83,7 +83,7 @@ class TLM:
         Returns:
             InferenceResult object containing:
                 - response: The generated response (string or dict for structured outputs)
-                - confidence_score: Confidence score between 0 and 1
+                - trustworthiness_score: Confidence score between 0 and 1
                 - usage: Token usage information
                 - metadata: Additional metadata (e.g., per-field scores for structured outputs)
                 - evals: Dictionary of additional evaluation scores (if evals are provided)
@@ -123,7 +123,7 @@ class TLM:
         Returns:
             InferenceResult containing:
                 - response: The original response (preserved from input)
-                - confidence_score: Confidence score between 0 and 1
+                - trustworthiness_score: Confidence score between 0 and 1
                 - usage: Token usage information
                 - metadata: Additional metadata (e.g., per-field scores for structured outputs)
                 - evals: Dictionary of additional evaluation scores (if evals are provided)

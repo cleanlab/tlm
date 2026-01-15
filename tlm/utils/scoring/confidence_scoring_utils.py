@@ -19,7 +19,7 @@ class WeightedScore:
         self.weight = weight
 
 
-def get_confidence_scores(
+def get_trustworthiness_scores(
     workflow_type: WorkflowType,
     model: str,
     consistency_scores: npt.NDArray[np.float64],
@@ -53,7 +53,7 @@ def _generate_total_scores(
 ) -> npt.NDArray[np.float64]:
     """Generates total score for each reference answer (row) in scores dataframe.
 
-    The weights used to calculate total score are different depending on if prompt or get_confidence_score is called and perplexity score is calculated or not.
+    The weights used to calculate total score are different depending on if prompt or get_trustworthiness_score is called and perplexity score is calculated or not.
 
     If just self reflection score couldn't be computed (value is nan), that value is omitted from the total score calculation.
     If just observed consistency score couldn't be computed (value is nan), that value is omitted from the total score calculation.

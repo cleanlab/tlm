@@ -10,7 +10,7 @@ OBSERVED_CONSISTENCY_EXPLANATION_TEMPLATE = "This response is untrustworthy due 
 
 
 def get_explainability_message(
-    average_confidence_score: float | None,
+    average_trustworthiness_score: float | None,
     self_reflection_completions: list[list[Completion]],
     observed_consistency_completions: list[Completion],
     average_consistency_score: float,
@@ -20,10 +20,13 @@ def get_explainability_message(
 ) -> str:
     explainability_message = ""
 
-    if average_confidence_score is None:
+    if average_trustworthiness_score is None:
         return explainability_message
 
-    if not np.isnan(average_confidence_score) and average_confidence_score < defaults.EXPLAINABILITY_THRESHOLD:
+    if (
+        not np.isnan(average_trustworthiness_score)
+        and average_trustworthiness_score < defaults.EXPLAINABILITY_THRESHOLD
+    ):
         self_reflection_completions_flat = [
             completion for sublist in self_reflection_completions for completion in sublist
         ]

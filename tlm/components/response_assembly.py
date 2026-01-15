@@ -30,24 +30,24 @@ class ResponseAssembly(Component):
         super().__init__(depends_on=depends_on)
 
     async def execute(self) -> None:
-        confidence_scores = self.execution_context.get("confidence_scores")
+        trustworthiness_scores = self.execution_context.get("trustworthiness_scores")
         reference_answers = self.execution_context.get("reference_answers")
         reference_completions: list[Completion] = self.execution_context.get("reference_completions")
 
         best_answer_idx: int
 
-        if np.isnan(confidence_scores).all():
+        if np.isnan(trustworthiness_scores).all():
             best_answer_idx = 0
-            average_confidence_score = None
+            average_trustworthiness_score = None
         else:
-            best_answer_idx = np.nanargmax(confidence_scores, axis=0)
-            average_confidence_score = np.nanmean(confidence_scores)
+            best_answer_idx = np.nanargmax(trustworthiness_scores, axis=0)
+            average_trustworthiness_score = np.nanmean(trustworthiness_scores)
 
         best_answer = reference_answers[best_answer_idx]
         best_completion = reference_completions[best_answer_idx]
 
-        if average_confidence_score is not None:
-            make_score_asymptotic(average_confidence_score)
+        if average_trustworthiness_score is not None:
+            make_score_asymptotic(average_trustworthiness_score)
 
         self.execution_context.add("best_answer_idx", best_answer_idx)
 
@@ -56,7 +56,7 @@ class ResponseAssembly(Component):
         else:
             self.execution_context.add("best_response", get_cleaned_chat_completion(best_completion))
 
-        self.execution_context.add("confidence_score", average_confidence_score)
+        self.execution_context.add("trustworthiness_score", average_trustworthiness_score)
 
         if self.inference_type == InferenceType.PROMPT:
             if best_completion.usage is None:
@@ -92,7 +92,7 @@ class ResponseAssembly(Component):
             mean_consistency_score = float(np.nanmean(consistency_scores))
 
         explainability_message = get_explainability_message(
-            average_confidence_score,
+            average_trustworthiness_score,
             self_reflection_completions,
             observed_consistency_completions,
             mean_consistency_score,
