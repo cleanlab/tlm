@@ -3,7 +3,7 @@ import logging
 
 from tlm.components import Component
 from tlm.config.presets import WorkflowType
-from tlm.utils.scoring.confidence_scoring_utils import get_trustworthiness_scores
+from tlm.utils.scoring.trustworthiness_scoring_utils import get_trustworthiness_scores
 
 logger = logging.getLogger(__name__)
 
