@@ -9,7 +9,7 @@ from tlm.utils.scoring.semantic_evaluation_scoring_utils import DEFAULT_RAG_EVAL
 
 class InferenceResult(TypedDict):
     response: str | dict[str, Any]  # either a response string or OpenAI chat completion dict
-    confidence_score: float
+    trustworthiness_score: float
     usage: dict[str, Any]
     metadata: dict[str, Any] | None
     evals: dict[str, float] | None
@@ -37,7 +37,7 @@ async def tlm_inference(
     results = await pipeline.run()
 
     best_response = results["best_response"]
-    confidence_score = results["confidence_score"]
+    trustworthiness_score = results["trustworthiness_score"]
     usage = results.get("usage", {})
     explanation = results.get("explanation")
     evals_not_requiring_response: dict[str, float] = results.get("evals_not_requiring_response", {})
@@ -48,7 +48,7 @@ async def tlm_inference(
 
     return InferenceResult(
         response=best_response,
-        confidence_score=confidence_score,
+        trustworthiness_score=trustworthiness_score,
         usage=usage,
         metadata=metadata,
         evals={

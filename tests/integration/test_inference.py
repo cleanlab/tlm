@@ -67,7 +67,7 @@ async def run_inference_test(kwargs: dict, enabled=True) -> bool:
             response_str = response["response"]
 
         print(f"   - Response: {response_str}")
-        print(f"   - Confidence score: {response['confidence_score']}")
+        print(f"   - Confidence score: {response['trustworthiness_score']}")
         print(f"   - Usage: {response['usage']}")
         print(f"   - Metadata: {response['metadata']}")
         print(f"   - RAG evals: {response['evals']}")

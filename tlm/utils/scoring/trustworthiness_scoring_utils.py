@@ -6,7 +6,11 @@ import pandas as pd
 import logging
 
 from tlm.config.presets import WorkflowType
-from tlm.config.score_weights import COMPONENT_SCORE_WEIGHTS, DEFAULT_MODEL, PERPLEXITY_SCORE_WEIGHT
+from tlm.config.score_weights import (
+    COMPONENT_SCORE_WEIGHTS,
+    DEFAULT_MODEL,
+    PERPLEXITY_SCORE_WEIGHT,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +23,7 @@ class WeightedScore:
         self.weight = weight
 
 
-def get_confidence_scores(
+def get_trustworthiness_scores(
     workflow_type: WorkflowType,
     model: str,
     consistency_scores: npt.NDArray[np.float64],
@@ -53,7 +57,7 @@ def _generate_total_scores(
 ) -> npt.NDArray[np.float64]:
     """Generates total score for each reference answer (row) in scores dataframe.
 
-    The weights used to calculate total score are different depending on if prompt or get_confidence_score is called and perplexity score is calculated or not.
+    The weights used to calculate total score are different depending on if prompt or get_trustworthiness_score is called and perplexity score is calculated or not.
 
     If just self reflection score couldn't be computed (value is nan), that value is omitted from the total score calculation.
     If just observed consistency score couldn't be computed (value is nan), that value is omitted from the total score calculation.
@@ -73,7 +77,7 @@ def _generate_total_scores(
 
     total_scores: List[float] = []
 
-    logger.info("Generating confidence scores with scores:")
+    logger.info("Generating trustworthiness scores with scores:")
     logger.info(f"-- Consistency scores: {consistency_scores}")
     logger.info(f"-- Indicator scores: {indicator_scores}")
     logger.info(f"-- Self reflection scores: {self_reflection_scores}")
@@ -96,7 +100,11 @@ def _generate_total_scores(
         self_reflection_score_weight,
         prompt_eval_score_weight,
         perplexity_score_weight,
-    ) = get_score_weights(use_perplexity_score=use_perplexity_score, workflow_type=workflow_type, model=model).values()
+    ) = get_score_weights(
+        use_perplexity_score=use_perplexity_score,
+        workflow_type=workflow_type,
+        model=model,
+    ).values()
 
     for _, row in scores.iterrows():
         weighted_score_parts: List[WeightedScore] = [
@@ -146,7 +154,8 @@ def _generate_total_scores(
 
 def get_score_weights(use_perplexity_score: bool, workflow_type: WorkflowType, model: str) -> Dict[str, float]:
     """Determines which weights to use for the total score calculation and returns appropriate weights dictionary.
-    Weights are dependent on the model used and if we have a perplexity score calculated."""
+    Weights are dependent on the model used and if we have a perplexity score calculated.
+    """
 
     # First get weights for the current workflow type
     workflow_weights = COMPONENT_SCORE_WEIGHTS.get(workflow_type, COMPONENT_SCORE_WEIGHTS[WorkflowType.DEFAULT])

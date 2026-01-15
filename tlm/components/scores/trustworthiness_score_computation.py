@@ -3,13 +3,18 @@ import logging
 
 from tlm.components import Component
 from tlm.config.presets import WorkflowType
-from tlm.utils.scoring.confidence_scoring_utils import get_confidence_scores
+from tlm.utils.scoring.trustworthiness_scoring_utils import get_trustworthiness_scores
 
 logger = logging.getLogger(__name__)
 
 
-class ConfidenceScoreComputation(Component):
-    def __init__(self, workflow_type: WorkflowType, model: str, depends_on: list[Component] | None = None):
+class TrustworthinessScoreComputation(Component):
+    def __init__(
+        self,
+        workflow_type: WorkflowType,
+        model: str,
+        depends_on: list[Component] | None = None,
+    ):
         self.workflow_type = workflow_type
         self.model = model
         super().__init__(depends_on=depends_on)
@@ -22,7 +27,7 @@ class ConfidenceScoreComputation(Component):
         use_perplexity_score = self.execution_context.get("use_perplexity_score")
         prompt_evaluation_scores = self.execution_context.get("prompt_evaluation_scores", [])
 
-        confidence_scores = get_confidence_scores(
+        trustworthiness_scores = get_trustworthiness_scores(
             self.workflow_type,
             self.model,
             consistency_scores,
@@ -33,6 +38,6 @@ class ConfidenceScoreComputation(Component):
             prompt_evaluation_scores,
         )
 
-        logger.info(f"Calculated confidence scores: {confidence_scores}")
+        logger.info(f"Calculated trustworthiness scores: {trustworthiness_scores}")
 
-        self.execution_context.add("confidence_scores", confidence_scores)
+        self.execution_context.add("trustworthiness_scores", trustworthiness_scores)
