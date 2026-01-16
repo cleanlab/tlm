@@ -21,6 +21,12 @@ class ExtractedResponseField(str, Enum):
 
 
 class SimilarityMeasure(str, Enum):
+    """Strategies for scoring the similarity of two generated responses.
+
+    Values:
+        `JACCARD`, `EMBEDDING_SMALL`, `EMBEDDING_LARGE`, `CODE`, `STATEMENT`
+    """
+
     JACCARD = "jaccard"  # formerly STRING
     EMBEDDING_SMALL = "embedding_small"
     EMBEDDING_LARGE = "embedding_large"
@@ -56,6 +62,17 @@ class FieldMetadata(BaseModel):
 
 
 class Eval(BaseModel):
+    """Criteria for performing a semantic evaluation of the query, context, and/or response.
+    At least one of query_identifier, context_identifier, and response_identifier must be provided.
+
+    Attributes:
+        name: The name of the evaluation.
+        criteria: Semantic description of the criteria to assess.
+        query_identifier: Identifier for the user query to be provided in the prompt passed to the LLM, e.g. "User Query". Should be `None` if the evaluation does not require the query.
+        context_identifier: Identifier for the context to be provided in the prompt passed to the LLM, e.g. "Context". Should be `None` if the evaluation does not require the context.
+        response_identifier: Identifier for the response to be provided in the prompt passed to the LLM, e.g. "Response". Should be `None` if the evaluation does not require the response.
+    """
+
     name: str
     criteria: str
     query_identifier: str | None = None

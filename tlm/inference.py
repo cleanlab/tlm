@@ -8,7 +8,18 @@ from tlm.utils.scoring.semantic_evaluation_scoring_utils import DEFAULT_RAG_EVAL
 
 
 class InferenceResult(TypedDict):
-    response: str | dict[str, Any]  # either a response string or OpenAI chat completion dict
+    """Result returned from TLM inference.
+
+    Attributes:
+        response: Either a response string or dictionary representation of an OpenAI chat completion.
+        trustworthiness_score: Score indicating the trustworthiness of the response, between 0 and 1.
+        usage: Token usage information for the inference, including prompt and completion tokens.
+        metadata: Optional metadata, e.g. per-field scores for structured outputs.
+        evals: Optional dictionary of Eval scores, keyed by evaluation name.
+        explanation: Explanation for the trustworthiness score.
+    """
+
+    response: str | dict[str, Any]
     trustworthiness_score: float
     usage: dict[str, Any]
     metadata: dict[str, Any] | None

@@ -3,6 +3,15 @@ from typing import Any
 
 
 class QualityPreset(str, Enum):
+    """Quality presets that control the trade-off between speed and accuracy.
+
+    Higher quality presets generate more completions and use more advanced techniques,
+    resulting in higher trustworthiness scores but slower inference and higher costs.
+
+    Values:
+        `BASE`, `LOW`, `MEDIUM` (default), `HIGH`, `BEST`
+    """
+
     BASE = "base"
     LOW = "low"
     MEDIUM = "medium"
@@ -11,7 +20,14 @@ class QualityPreset(str, Enum):
 
 
 class ReasoningEffort(str, Enum):
-    """Enum for different levels of reasoning effort supported by TLM."""
+    """Reasoning effort levels that control explanation generation for trustworthiness scores.
+
+    Higher reasoning effort generates longer explanations that provide more detailed
+    reasoning about why a particular trustworthiness score was assigned.
+
+    Values:
+        `NONE` (default), `LOW`, `MEDIUM`, `HIGH`
+    """
 
     NONE = "none"
     LOW = "low"
