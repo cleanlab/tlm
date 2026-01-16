@@ -22,7 +22,7 @@ from tlm.config.presets import QualityPreset  # noqa: E402
 from tlm.templates import ReferenceCompletionTemplate  # noqa: E402
 from tlm import TLM  # noqa: E402
 from tlm.utils.completion_utils import generate_completion  # noqa: E402
-from tlm.types import Completion, SemanticEval, SimilarityMeasure  # noqa: E402
+from tlm.types import Completion, Eval, SimilarityMeasure  # noqa: E402
 
 # Load environment variables from .env file at top level of project
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -115,12 +115,12 @@ async def run_tests():
                 "messages": [{"role": "user", "content": "Explain the concept of machine learning in simple terms."}]
             },
             "evals": [
-                SemanticEval(
+                Eval(
                     name="clarity",
                     criteria="The response is clear and easy to understand.",
                     response_identifier="response",
                 ),
-                SemanticEval(
+                Eval(
                     name="conciseness",
                     criteria="The response is concise and to the point.",
                     response_identifier="response",

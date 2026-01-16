@@ -13,7 +13,7 @@ from tlm.templates.keywords import (
 )
 from tlm.templates.parsers import RATING_XML_PARSER, THINK_RATING_XML_PARSER
 from tlm.templates.score_mapping import score_5_mapping
-from tlm.types import SemanticEval, CompletionTemplate
+from tlm.types import Eval, CompletionTemplate
 
 
 class SemanticEvaluationCompletionTemplate(CompletionTemplate):
@@ -57,9 +57,7 @@ Format your output using the following template:"""
     )
 
     @classmethod
-    def create(
-        cls, eval: SemanticEval, reasoning_effort: ReasoningEffort, **kwargs
-    ) -> "SemanticEvaluationCompletionTemplate":
+    def create(cls, eval: Eval, reasoning_effort: ReasoningEffort, **kwargs) -> "SemanticEvaluationCompletionTemplate":
         prompt_parts = [cls._PREFIX]
         input_information = []
 

@@ -19,7 +19,7 @@ from tlm.config.presets import WorkflowType
 from tlm.pipeline import InferencePipeline
 from tlm.utils.prompt_utils import format_user_request, extract_user_prompt
 from tlm.utils.eval_utils import group_evals
-from tlm.types import SemanticEval, CompletionParams, InferenceType
+from tlm.types import Eval, CompletionParams, InferenceType
 
 
 class PipelineFactory:
@@ -29,7 +29,7 @@ class PipelineFactory:
         completion_params: CompletionParams,
         config: BaseConfig,
         response: Dict[str, Any] | None,
-        evals: list[SemanticEval] | None,
+        evals: list[Eval] | None,
         context: str | None,
     ) -> InferencePipeline:
         pipeline = InferencePipeline()

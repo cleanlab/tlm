@@ -3,7 +3,7 @@ from typing import Any, TypedDict
 from tlm.config.base import BaseConfig
 from tlm.config.presets import WorkflowType
 from tlm.pipeline import PipelineFactory
-from tlm.types import SemanticEval, CompletionParams
+from tlm.types import Eval, CompletionParams
 from tlm.utils.scoring.semantic_evaluation_scoring_utils import DEFAULT_RAG_EVALS
 
 
@@ -20,7 +20,7 @@ async def tlm_inference(
     *,
     completion_params: CompletionParams,
     response: dict[str, Any] | None,
-    evals: list[SemanticEval] | None,
+    evals: list[Eval] | None,
     context: str | None,
     config: BaseConfig,
 ) -> InferenceResult:

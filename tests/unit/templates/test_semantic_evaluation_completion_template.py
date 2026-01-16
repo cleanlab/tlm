@@ -1,7 +1,7 @@
 from tlm.config.presets import ReasoningEffort
 from tlm.templates.semantic_evaluation_completion_template import SemanticEvaluationCompletionTemplate
 from tlm.utils.completion_utils import generate_completion
-from tlm.types import Completion, ExtractedResponseField, SemanticEval
+from tlm.types import Completion, ExtractedResponseField, Eval
 
 import pytest
 
@@ -44,7 +44,7 @@ async def test_semantic_evaluation_completion_template_with_reasoning_effort(
     expected_mapped_score: float,
 ) -> None:
     """Test SemanticEvaluationCompletionTemplate with different reasoning effort levels."""
-    eval = SemanticEval(
+    eval = Eval(
         name="context_sufficiency",
         criteria="Determine if the Document contains 100% of the information needed to answer the Question.",
         query_identifier="Question",
@@ -109,7 +109,7 @@ async def test_semantic_evaluation_completion_template_with_different_identifier
     reference_answer: str | None,
 ) -> None:
     """Test SemanticEvaluationCompletionTemplate with different identifier configurations."""
-    eval = SemanticEval(
+    eval = Eval(
         name="test_eval",
         criteria="Test criteria for evaluation.",
         query_identifier=query_identifier,

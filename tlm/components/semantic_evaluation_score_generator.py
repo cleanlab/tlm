@@ -5,7 +5,7 @@ from tlm.config.presets import REASONING_EFFORT_TO_MAX_EXPLANATION_WORDS, Reason
 from tlm.templates import SemanticEvaluationCompletionTemplate
 from tlm.utils.completion_utils import generate_completion
 from tlm.utils.scoring.semantic_evaluation_scoring_utils import compute_semantic_evaluation_scores
-from tlm.types import SemanticEval
+from tlm.types import Eval
 
 
 class SemanticEvaluationScoreGenerator(Component):
@@ -17,7 +17,7 @@ class SemanticEvaluationScoreGenerator(Component):
         self,
         query: str | None,
         context: str | None,
-        evals: list[SemanticEval],
+        evals: list[Eval],
         reasoning_effort: ReasoningEffort,
         temperature: float,
         **kwargs,

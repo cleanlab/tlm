@@ -1,7 +1,7 @@
-from tlm.types import SemanticEval
+from tlm.types import Eval
 
 
-def group_evals(evals: list[SemanticEval] | None) -> tuple[list[SemanticEval], list[SemanticEval]]:
+def group_evals(evals: list[Eval] | None) -> tuple[list[Eval], list[Eval]]:
     if evals is None:
         return [], []
 

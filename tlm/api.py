@@ -8,7 +8,7 @@ from tlm.config.base import BaseConfig
 from tlm.config.schema import Config
 from tlm.config.presets import WorkflowType
 from tlm.inference import InferenceResult, tlm_inference
-from tlm.types import SemanticEval
+from tlm.types import Eval
 
 
 def is_notebook() -> bool:
@@ -30,7 +30,7 @@ class TLM:
     def __init__(
         self,
         config: Config = Config(),
-        evals: list[SemanticEval] | None = None,
+        evals: list[Eval] | None = None,
     ):
         """Initialize a TLM instance.
 
@@ -60,7 +60,7 @@ class TLM:
         self,
         *,
         context: str | None = None,
-        evals: list[SemanticEval] | None = None,
+        evals: list[Eval] | None = None,
         **openai_kwargs: Any,
     ) -> InferenceResult:
         """Create a new LLM completion and then score its trustworthiness.
@@ -103,7 +103,7 @@ class TLM:
         *,
         response: ChatCompletion | dict[str, Any],
         context: str | None = None,
-        evals: list[SemanticEval] | None = None,
+        evals: list[Eval] | None = None,
         **openai_kwargs: Any,
     ) -> InferenceResult:
         """Score the trusworthiness of an existing LLM response/completion (from any LLM, or even from a human-writer).
@@ -145,7 +145,7 @@ class TLM:
         *,
         response: dict[str, Any] | None = None,
         context: str | None = None,
-        evals: list[SemanticEval] | None = None,
+        evals: list[Eval] | None = None,
         **openai_kwargs: Any,
     ) -> InferenceResult:
         """Internal async method that performs the inference or scoring operation.

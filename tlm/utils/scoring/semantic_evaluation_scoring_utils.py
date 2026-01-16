@@ -1,7 +1,7 @@
 import numpy as np
 
 from tlm.utils.math_utils import get_nan_safe_mean, make_score_asymptotic
-from tlm.types import Completion, CompletionFailure, ExtractedResponseField, SemanticEval
+from tlm.types import Completion, CompletionFailure, ExtractedResponseField, Eval
 from tlm.utils.parse_utils import compute_score_expected_value
 
 
@@ -42,12 +42,12 @@ Should an AI Assistant be able to properly answer the User Request, it is consid
     },
 ]
 
-DEFAULT_RAG_EVALS = [SemanticEval(**eval_dict) for eval_dict in _DEFAULT_EVALS_DICT]  # type: ignore
+DEFAULT_RAG_EVALS = [Eval(**eval_dict) for eval_dict in _DEFAULT_EVALS_DICT]  # type: ignore
 
 
 def compute_semantic_evaluation_scores(
     reference_answers: list[str | None],
-    evals: list[SemanticEval],
+    evals: list[Eval],
     semantic_evaluation_completions: list[Completion | CompletionFailure],
 ) -> dict[str, float]:
     """

@@ -55,7 +55,7 @@ class FieldMetadata(BaseModel):
     explanation: str
 
 
-class SemanticEval(BaseModel):
+class Eval(BaseModel):
     name: str
     criteria: str
     query_identifier: str | None = None
