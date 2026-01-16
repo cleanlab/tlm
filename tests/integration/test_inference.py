@@ -15,7 +15,8 @@ from pydantic import BaseModel
 tlm_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, tlm_core_path)
 
-from tlm.config.base import ConfigInput, ReasoningEffort  # noqa: E402
+from tlm.config.base import ReasoningEffort  # noqa: E402
+from tlm.config.schema import Config  # noqa: E402
 from tlm.config.models import BEDROCK_MODELS  # noqa: E402
 from tlm.config.presets import QualityPreset  # noqa: E402
 from tlm.templates import ReferenceCompletionTemplate  # noqa: E402
@@ -96,7 +97,7 @@ async def run_tests():
 
     test_inference_params = [
         {
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.BASE,
                 reasoning_effort=ReasoningEffort.LOW,
                 model="gpt-4.1-mini",
@@ -104,7 +105,7 @@ async def run_tests():
             "openai_args": {"messages": [{"role": "user", "content": "What is the capital of France?"}]},
         },
         {
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.HIGH,
                 reasoning_effort=ReasoningEffort.HIGH,
                 similarity_measure=SimilarityMeasure.EMBEDDING_LARGE,
@@ -128,7 +129,7 @@ async def run_tests():
             "enabled": True,
         },
         {
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.MEDIUM,
                 reasoning_effort=ReasoningEffort.MEDIUM,
                 similarity_measure=SimilarityMeasure.JACCARD,
@@ -138,7 +139,7 @@ async def run_tests():
             },
         },
         {
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.HIGH,
                 reasoning_effort=ReasoningEffort.HIGH,
                 constrain_outputs=["positive", "negative", "neutral"],
@@ -154,7 +155,7 @@ async def run_tests():
             },
         },
         {
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.HIGH,
                 reasoning_effort=ReasoningEffort.HIGH,
                 constrain_outputs=["yes", "no"],
@@ -165,7 +166,7 @@ async def run_tests():
             },
         },
         {
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.HIGH,
                 reasoning_effort=ReasoningEffort.HIGH,
             ),
@@ -197,7 +198,7 @@ async def run_tests():
             },
             "context": "The Simple Water Bottle is a reusable 27 oz water bottle.",
             # "evals": DEFAULT_RAG_EVALS,
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.BEST,
                 reasoning_effort=ReasoningEffort.MEDIUM,
             ),
@@ -267,7 +268,7 @@ async def run_tests():
                 },
                 "perplexity": 0.95,
             },
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.HIGH,
                 model="gpt-4.1-mini",
             ),
@@ -292,7 +293,7 @@ async def run_tests():
                     },
                 },
             },
-            "config_input": ConfigInput(
+            "config": Config(
                 quality_preset=QualityPreset.HIGH,
                 model="gpt-4.1-mini",
             ),

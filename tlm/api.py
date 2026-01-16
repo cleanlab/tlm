@@ -4,7 +4,8 @@ import asyncio
 import sys
 from openai.types.chat import ChatCompletion
 
-from tlm.config.base import Config, ConfigInput
+from tlm.config.base import BaseConfig
+from tlm.config.schema import Config
 from tlm.config.presets import WorkflowType
 from tlm.inference import InferenceResult, tlm_inference
 from tlm.types import SemanticEval
@@ -28,7 +29,7 @@ class TLM:
 
     def __init__(
         self,
-        config_input: ConfigInput = ConfigInput(),
+        config: Config = Config(),
         evals: list[SemanticEval] | None = None,
     ):
         """Initialize a TLM instance.
@@ -40,7 +41,7 @@ class TLM:
             evals: Optional list of evaluations. Each evaluation
                 defines a name, criteria, and optional query/context/response identifiers.
         """
-        self.config_input = config_input
+        self.config = config
         self.evals = evals
 
         is_notebook_flag = is_notebook()
@@ -157,10 +158,10 @@ class TLM:
             openai_args=openai_kwargs,
             score=response is not None,
             rag=(context is not None),
-            constrain_outputs=self.config_input.constrain_outputs,
+            constrain_outputs=self.config.constrain_outputs,
         )
         model = openai_kwargs.get("model")
-        config = Config.from_input(self.config_input, workflow_type, model)
+        config = BaseConfig.from_input(self.config, workflow_type, model)
         return await tlm_inference(
             completion_params=openai_kwargs,
             response=response,
