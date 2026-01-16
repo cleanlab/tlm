@@ -91,5 +91,7 @@ nav:
     # - Structured Outputs: tutorials/tlm_structured_outputs/index.ipynb
     # - Tool Calls: tutorials/tlm_tool_calls/index.ipynb
   - API Reference:
-    - tlm: api/tlm.md
+    - TLM: api/tlm.md
+    - Config: api/config.md
+    - Types: api/types.md
   - Additional Cookbooks: https://github.com/cleanlab/cleanlab-tools
