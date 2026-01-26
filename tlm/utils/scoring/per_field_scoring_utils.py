@@ -27,6 +27,35 @@ def extract_per_field_reflection_metadata(
     return per_field_metadata
 
 
+def extract_incorrect_fields_reflection_metadata(
+    answer: str,
+    reference_answer: str,
+) -> dict[str, FieldMetadata]:
+    answer_json = json.loads(answer)
+
+    incorrect_fields_list = answer_json["incorrect_fields"]
+    incorrect_field_names_and_explanations = {item["field_name"]: item["explanation"] for item in incorrect_fields_list}
+
+    field_names = json.loads(reference_answer).keys()
+    per_field_metadata = {}
+
+    # these values were benchmarked on 10/2025, there was no significant difference when using values from 0.8-0.95
+    CORRECT_SCORE = 0.9
+    INCORRECT_SCORE = 0.1
+
+    # construct scores and mapped scores for each field for downstream use of per-field score details
+    for field in field_names:
+        if field in incorrect_field_names_and_explanations.keys():
+            per_field_metadata[field] = FieldMetadata(
+                score=INCORRECT_SCORE,
+                explanation=incorrect_field_names_and_explanations[field],
+            )
+        else:
+            per_field_metadata[field] = FieldMetadata(score=CORRECT_SCORE)
+
+    return per_field_metadata
+
+
 def compute_field_metadata(completion_metadata: list[dict[str, FieldMetadata]]) -> dict[str, FieldMetadata]:
     score_data: dict[str, dict[str, list]] = {}
 
@@ -43,10 +72,25 @@ def compute_field_metadata(completion_metadata: list[dict[str, FieldMetadata]]) 
 
     composite_metadata = {}
     for field_name, data in score_data.items():
-        min_score_idx = np.argmin(data["scores"])
+        all_scores = data["scores"]
+        scores_with_explanation = []
+        explanations = []
+
+        for score, explanation in zip(data["scores"], data["explanations"]):
+            if explanation:
+                scores_with_explanation.append(score)
+                explanations.append(explanation)
+
+        # get explanation from the SR completion with the lowest score
+        if scores_with_explanation:
+            min_score_idx = np.argmin(scores_with_explanation)
+            explanation = explanations[min_score_idx]
+        else:
+            explanation = None
+
         composite_metadata[field_name] = {
-            "score": np.mean(data["scores"]),
-            "explanation": data["explanations"][min_score_idx],
+            "score": np.mean(all_scores),
+            "explanation": explanation,
         }
 
     return composite_metadata  # type: ignore[return-value]
