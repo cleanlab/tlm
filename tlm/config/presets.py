@@ -135,3 +135,7 @@ DEFAULT_CONFIG_FOR_QUALITY_AND_WORKFLOW = {
         WorkflowType.DEFAULT: {NUM_CONSISTENCY_COMPLETIONS: 0, NUM_SELF_REFLECTION_COMPLETIONS: 0},
     },
 }
+
+# these values were benchmarked on 10/2025, there was no significant difference when using values from 0.8-0.95
+STRUCTURED_OUTPUT_CORRECT_FIELD_SCORE: float = 0.9
+STRUCTURED_OUTPUT_INCORRECT_FIELD_SCORE: float = 0.1

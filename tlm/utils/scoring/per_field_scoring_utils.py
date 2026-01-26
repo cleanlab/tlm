@@ -2,7 +2,12 @@ import json
 import numpy as np
 from typing import Callable
 
-from tlm.types import FieldMetadata
+from tlm.types import FieldMetadata, Completion, SOReflectionScoreConfigType
+from tlm.utils.math_utils import make_score_asymptotic
+from tlm.config.presets import (
+    STRUCTURED_OUTPUT_CORRECT_FIELD_SCORE,
+    STRUCTURED_OUTPUT_INCORRECT_FIELD_SCORE,
+)
 
 
 def extract_per_field_reflection_metadata(
@@ -39,24 +44,23 @@ def extract_incorrect_fields_reflection_metadata(
     field_names = json.loads(reference_answer).keys()
     per_field_metadata = {}
 
-    # these values were benchmarked on 10/2025, there was no significant difference when using values from 0.8-0.95
-    CORRECT_SCORE = 0.9
-    INCORRECT_SCORE = 0.1
-
     # construct scores and mapped scores for each field for downstream use of per-field score details
     for field in field_names:
         if field in incorrect_field_names_and_explanations.keys():
             per_field_metadata[field] = FieldMetadata(
-                score=INCORRECT_SCORE,
+                score=STRUCTURED_OUTPUT_INCORRECT_FIELD_SCORE,
                 explanation=incorrect_field_names_and_explanations[field],
             )
         else:
-            per_field_metadata[field] = FieldMetadata(score=CORRECT_SCORE)
+            per_field_metadata[field] = FieldMetadata(score=STRUCTURED_OUTPUT_CORRECT_FIELD_SCORE)
 
     return per_field_metadata
 
 
-def compute_field_metadata(completion_metadata: list[dict[str, FieldMetadata]]) -> dict[str, FieldMetadata]:
+def compute_field_metadata(
+    completion_metadata: list[dict[str, FieldMetadata]],
+    scoring_data: list[Completion] | None = None,
+) -> dict[str, FieldMetadata]:
     score_data: dict[str, dict[str, list]] = {}
 
     for metadata_per_field in completion_metadata:
@@ -88,8 +92,37 @@ def compute_field_metadata(completion_metadata: list[dict[str, FieldMetadata]]) 
         else:
             explanation = None
 
+        # linearly rescale the scores from [min_possible_score, max_possible_score] to [0.001, 0.999]
+        avg_score = float(np.mean(all_scores))
+
+        if scoring_data is not None and len(scoring_data) > 0:
+            num_total_templates = len(scoring_data)
+
+            num_incorrect_fields_templates = sum(
+                completion.template is not None
+                and completion.template.so_reflection_score_config_type == SOReflectionScoreConfigType.INCORRECT_FIELDS
+                for completion in scoring_data
+            )
+
+            num_non_incorrect_fields_templates = num_total_templates - num_incorrect_fields_templates
+
+            max_possible_score = (
+                STRUCTURED_OUTPUT_CORRECT_FIELD_SCORE * num_incorrect_fields_templates
+                + 1.0 * num_non_incorrect_fields_templates
+            ) / num_total_templates
+            min_possible_score = 1 - max_possible_score
+
+            score_range = max_possible_score - min_possible_score
+            if score_range > 0:
+                normalized_score = max(avg_score - min_possible_score, 0.0) / score_range
+                scaled_score = make_score_asymptotic(normalized_score)
+            else:
+                scaled_score = avg_score
+        else:
+            scaled_score = avg_score
+
         composite_metadata[field_name] = {
-            "score": np.mean(all_scores),
+            "score": scaled_score,
             "explanation": explanation,
         }
 

@@ -21,6 +21,10 @@ class SelfReflectionScoreComputation(Component):
             for completion in self_reflection_completions_flat
             if (metadata := completion.per_field_metadata) is not None
         ]
-        composite_reflection_metadata = compute_field_metadata(reflection_metadata)
+
+        scoring_data = [
+            completion for completion in self_reflection_completions_flat if completion.per_field_metadata is not None
+        ]
+        composite_reflection_metadata = compute_field_metadata(reflection_metadata, scoring_data=scoring_data)
 
         self.execution_context.add("self_reflection_metadata_per_field", composite_reflection_metadata)
