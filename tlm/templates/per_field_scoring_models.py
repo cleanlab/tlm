@@ -13,3 +13,7 @@ class PerFieldCertaintyEvaluation(PerFieldScoreEvaluationBase):
 
 class PerFieldCorrectnessEvaluation(PerFieldScoreEvaluationBase):
     confidence: Literal["Certain", "Mostly Certain", "Somewhat Certain", "Uncertain", "Likely Incorrect"]
+
+
+# base class type for incorrect field evaluation
+class IncorrectFieldEvaluationBase(BaseModel): ...

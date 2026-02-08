@@ -58,7 +58,7 @@ class CompletionFailureType(Enum):
 
 class FieldMetadata(BaseModel):
     score: float
-    explanation: str
+    explanation: str | None = None
 
 
 class Eval(BaseModel):
@@ -102,3 +102,8 @@ class CompletionFailure(BaseModel):
 
 
 CompletionParams = Dict[str, Any]
+
+
+class SOReflectionScoreConfigType(str, Enum):
+    PER_FIELD = "per_field"
+    INCORRECT_FIELDS = "incorrect_fields"

@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Callable, ClassVar
+from typing import Callable, ClassVar, Literal
+import json
+from pydantic import BaseModel, Field
 
-from pydantic import BaseModel
-
+from tlm.types.base import SOReflectionScoreConfigType
 from tlm.config.presets import ReasoningEffort, WorkflowType
 from tlm.templates.keywords import (
     ANSWER_PLACEHOLDER,
@@ -33,7 +34,11 @@ from tlm.templates.score_mapping import (
 )
 from tlm.types import AnswerChoiceToken, ExtractedResponseField, RegexPattern, CompletionTemplate
 from tlm.utils.response_format_utils import construct_per_field_response_format_model
-from tlm.templates.per_field_scoring_models import PerFieldCorrectnessEvaluation, PerFieldCertaintyEvaluation
+from tlm.templates.per_field_scoring_models import (
+    PerFieldCorrectnessEvaluation,
+    PerFieldCertaintyEvaluation,
+    IncorrectFieldEvaluationBase,
+)
 
 
 class ReflectionCompletionTemplate(CompletionTemplate, ABC):
@@ -77,6 +82,7 @@ class ReflectionSOPerFieldScoreTemplate(ReflectionCompletionTemplate):
     per_field_score_response_format: ClassVar[type[BaseModel]]
 
     def __init_subclass__(cls, **kwargs):
+        cls.so_reflection_score_config_type = SOReflectionScoreConfigType.PER_FIELD
         super().__init_subclass__(**kwargs)
         if not hasattr(cls, "per_field_score_response_format"):
             raise TypeError(f"{cls.__name__} must define 'per_field_score_response_format' class variable")
@@ -84,6 +90,13 @@ class ReflectionSOPerFieldScoreTemplate(ReflectionCompletionTemplate):
     @classmethod
     def construct_response_format(cls, response_json: str) -> type[BaseModel] | None:
         return construct_per_field_response_format_model(response_json, cls.per_field_score_response_format)
+
+
+class ReflectionSOIncorrectFieldsTemplate(ReflectionCompletionTemplate):
+    def __init_subclass__(cls, **kwargs):
+        cls.so_reflection_score_config_type = SOReflectionScoreConfigType.INCORRECT_FIELDS
+        cls.per_field_score_key = "score"  # use a default key name for the per-field score
+        super().__init_subclass__(**kwargs)
 
 
 class ReflectionCertaintyTemplate(ReflectionCompletionTemplate):
@@ -742,6 +755,142 @@ Each top-level key should map to an object with two fields:
         )
 
 
+class SelfReflectionSOFieldAccuracyConfig(ReflectionSOIncorrectFieldsTemplate):
+    _PROMPT: ClassVar[str] = f"""You are an evaluator that identifies factual inaccuracies in AI responses.
+Below is a User Request and the Response provided by an untrustworthy AI Assistant.
+Your task is to find and list any fields in the Response that are factually incorrect, incomplete, or unreliable.
+
+<request>
+{QUESTION_PLACEHOLDER}
+</request>
+
+<response>
+{ANSWER_PLACEHOLDER}
+</response>
+
+
+## Instructions
+
+Carefully evaluate the factual accuracy of each top-level field in the JSON Response.
+You must identify any fields that are likely incorrect, incomplete, unverifiable, or misleading.
+
+Be extremely strict in your judgment:
+- Treat any missing or partially correct information as potentially incorrect.
+- Penalize any unsupported assumptions, factual errors, or extraneous content.
+- Incomplete fields should be marked as incorrect. Do not excuse missing data, if a field is null/empty when it should contain information, it is incorrect.
+- Even small inaccuracies should cause a field to be flagged as untrustworthy.
+
+## Output Format
+
+Output a JSON object with three fields:
+1. "explanation": Briefly describe how you evaluated the response, what issues you found, and why certain fields were marked incorrect.
+2. "incorrect_fields": An array of objects containing ONLY the fields that are potentially incorrect. Each object has:
+   - "field_name": The name of the incorrect field
+   - "explanation": A brief explanation of why this field is incorrect
+   If all fields appear accurate and trustworthy, output an empty array ([]).
+3. "confidence_score": A score between 0 and 100 indicating your confidence in the overall correctness of the response. If you identify any incorrect, incomplete, or unverifiable fields, the score should be very low. Only assign a high score if every field is fully accurate and trustworthy.
+
+Think through your evaluation systematically and provide clear reasoning for your decisions."""
+
+    @classmethod
+    def create(cls, reasoning_effort: ReasoningEffort, **kwargs) -> ReflectionCompletionTemplate:
+        if reasoning_effort == ReasoningEffort.NONE:
+            raise ValueError("Per-field scoring only supports reasoning")
+
+        return cls(
+            prompt_template=cls._PROMPT,
+            parse_patterns={},
+            score_mapper=score_100_mapping,
+            use_logprobs=False,
+            so_overall_score_key_name="confidence_score",
+            **kwargs,
+        )
+
+    @classmethod
+    def construct_response_format(cls, response_json: str) -> type[BaseModel] | None:
+        response_fields = json.loads(response_json).keys()
+        ResponseFields = Literal[tuple(response_fields)]  # type: ignore
+
+        class IncorrectField(BaseModel):
+            field_name: ResponseFields  # type: ignore
+            explanation: str
+
+        class ConfidenceModel(IncorrectFieldEvaluationBase):
+            explanation: str
+            incorrect_fields: list[IncorrectField]
+            confidence_score: int = Field(ge=0, le=100)
+
+        return ConfidenceModel
+
+
+class SelfReflectionSOFieldKnowledgeGapConfig(ReflectionSOIncorrectFieldsTemplate):
+    _PROMPT: ClassVar[str] = f"""Below is a User Request and the proposed Response from an untrustworthy AI assistant:
+
+<request>
+{QUESTION_PLACEHOLDER}
+</request>
+
+<response>
+{ANSWER_PLACEHOLDER}
+</response>
+
+
+How can I be sure each field in this response is correct?
+
+Please provide a detailed, field-by-field evaluation of the proposed Response.
+
+For each top-level field:
+- Describe the evidence supporting the field’s content.
+- Assess the reliability of that evidence and explain why it can or cannot be trusted.
+- Identify any weaknesses: note if the field appears incorrect, incomplete, misleading, or unverifiable.
+
+Work step by step: systematically check each field for factual accuracy and completeness, then summarize your findings.
+
+This field-level evaluation should directly guide your overall confidence rating — the more issues you find, the lower the rating should be.
+Now rate your confidence on a scale of 0–10 that the response is correct.
+
+
+## Output Format
+
+Output a JSON object with three fields:
+1. "explanation": Briefly describe how you evaluated the response, what issues you found, and why certain fields were marked incorrect.
+2. "incorrect_fields": An array of objects containing ONLY the fields that are potentially incorrect. Each object has:
+   - "field_name": The name of the incorrect field
+   - "explanation": A brief explanation of why this field is incorrect
+   If all fields appear accurate and trustworthy, output an empty array ([]).
+3. "rating": A rating between 0 and 10. If you identify any incorrect, incomplete, or unverifiable fields, the rating should be very low. Only assign a high rating if every field is fully accurate and trustworthy."""
+
+    @classmethod
+    def create(cls, reasoning_effort: ReasoningEffort, **kwargs) -> ReflectionCompletionTemplate:
+        if reasoning_effort == ReasoningEffort.NONE:
+            raise ValueError("Per-field scoring only supports reasoning")
+
+        return cls(
+            prompt_template=cls._PROMPT,
+            parse_patterns={},
+            score_mapper=score_10_mapping,
+            use_logprobs=False,
+            so_overall_score_key_name="rating",
+            **kwargs,
+        )
+
+    @classmethod
+    def construct_response_format(cls, response_json: str) -> type[BaseModel] | None:
+        response_fields = json.loads(response_json).keys()
+        ResponseFields = Literal[tuple(response_fields)]  # type: ignore
+
+        class IncorrectField(BaseModel):
+            field_name: ResponseFields  # type: ignore
+            explanation: str
+
+        class RatingModel(IncorrectFieldEvaluationBase):
+            explanation: str
+            incorrect_fields: list[IncorrectField]
+            rating: int = Field(ge=0, le=10)
+
+        return RatingModel
+
+
 SELF_REFLECTION_TEMPLATES_BY_WORKFLOW: dict[WorkflowType, list[type[ReflectionCompletionTemplate]]] = {
     WorkflowType.QA: [
         ReflectionCertaintyTemplate,
@@ -761,8 +910,10 @@ SELF_REFLECTION_TEMPLATES_BY_WORKFLOW: dict[WorkflowType, list[type[ReflectionCo
         ReflectionRAGIssuesTemplate,
     ],
     WorkflowType.STRUCTURED_OUTPUT_SCORING: [
-        ReflectionCertaintyTemplate,
-        ReflectionKnowledgeGapTemplate,
+        # ReflectionCertaintyTemplate,
+        # ReflectionKnowledgeGapTemplate,
+        SelfReflectionSOFieldAccuracyConfig,
+        SelfReflectionSOFieldKnowledgeGapConfig,
         ReflectionArgumentTemplate,
         ReflectionSOPerScoreCorrectnessTemplate,
         ReflectionSOPerScoreCertaintyTemplate,

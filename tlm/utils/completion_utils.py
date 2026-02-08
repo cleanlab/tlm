@@ -23,11 +23,15 @@ from tlm.types import (
     CompletionUsage,
     ExtractedResponseField,
     CompletionTemplate,
+    SOReflectionScoreConfigType,
 )
 from tlm.utils.openai_utils import extract_structured_output_field, extract_message_content
 from tlm.utils.constrain_outputs_utils import constrain_output
 from tlm.utils.parse_utils import get_parsed_answer_tokens_confidence
-from tlm.utils.scoring.per_field_scoring_utils import extract_per_field_reflection_metadata
+from tlm.utils.scoring.per_field_scoring_utils import (
+    extract_per_field_reflection_metadata,
+    extract_incorrect_fields_reflection_metadata,
+)
 from tlm.utils.math_utils import harmonic_mean
 
 litellm.suppress_debug_info = True
@@ -46,6 +50,7 @@ async def generate_completion(
     template_kwargs: dict[str, Any] = {},
     temperature: float | None = None,
     response_format_model: type[BaseModel] | None = None,
+    reference_answer: str | None = None,
 ) -> Completion | CompletionFailure:
     litellm_params = _build_litellm_params(
         template,
@@ -55,7 +60,7 @@ async def generate_completion(
         response_format_model,
     )
 
-    completion = await _generate_completion(litellm_params, template)
+    completion = await _generate_completion(litellm_params, template, reference_answer)
 
     if isinstance(completion, Completion):
         log_msg = f"""Generated {template.__class__.__name__} completion for model {litellm_params["model"]} with messages:
@@ -115,6 +120,7 @@ def _build_litellm_params(
 async def _generate_completion(
     litellm_params: CompletionParams,
     template: CompletionTemplate | None,
+    reference_answer: str | None = None,
 ) -> Completion | CompletionFailure:
     try:
         response = await acompletion(**litellm_params)
@@ -167,7 +173,7 @@ async def _generate_completion(
             original_response=response,
             template=template,
         )
-        _parse_completion(completion)
+        _parse_completion(completion, reference_answer)
         return completion
 
     print(f"unhandled response type: {type(response)}")
@@ -183,7 +189,7 @@ def _get_raw_message_content(logprobs: ChoiceLogprobs) -> str | None:
     return "".join([message_token.token for message_token in logprobs.content])
 
 
-def _parse_completion(completion: Completion) -> None:
+def _parse_completion(completion: Completion, reference_answer: str | None = None) -> None:
     """Update the completion with parsed response fields"""
 
     if not completion.template:
@@ -239,12 +245,13 @@ def _parse_completion(completion: Completion) -> None:
         explanation = extract_structured_output_field(message_content, "explanation")
         completion.add_response_field(ExtractedResponseField.EXPLANATION, explanation)
 
-    if completion.template.per_field_score_key:
+    if completion.template.so_reflection_score_config_type == SOReflectionScoreConfigType.PER_FIELD:
         if isinstance(completion.original_response, Dict):
             message_content = extract_message_content(completion.original_response)
         else:
             message_content = completion.message
 
+        assert completion.template.per_field_score_key is not None
         assert completion.template.score_mapper is not None
         per_field_metadata = extract_per_field_reflection_metadata(
             message_content, completion.template.per_field_score_key, completion.template.score_mapper
@@ -252,6 +259,29 @@ def _parse_completion(completion: Completion) -> None:
         completion.per_field_metadata = per_field_metadata
         harmonic_mean_score = harmonic_mean([metadata.score for metadata in per_field_metadata.values()])
         completion.add_response_field(ExtractedResponseField.MAPPED_SCORE, harmonic_mean_score)
+
+    elif completion.template.so_reflection_score_config_type == SOReflectionScoreConfigType.INCORRECT_FIELDS:
+        if isinstance(completion.original_response, Dict):
+            message_content = extract_message_content(completion.original_response)
+        else:
+            message_content = completion.message
+
+        assert reference_answer is not None
+        per_field_metadata = extract_incorrect_fields_reflection_metadata(
+            message_content,
+            reference_answer,
+        )
+        completion.per_field_metadata = per_field_metadata
+        score_mapper = completion.template.score_mapper
+        assert score_mapper is not None
+
+        assert completion.template.so_overall_score_key_name is not None
+        unmapped_overall_score = json.loads(message_content)[completion.template.so_overall_score_key_name]
+
+        completion.add_response_field(
+            ExtractedResponseField.MAPPED_SCORE,
+            score_mapper(unmapped_overall_score),
+        )
 
 
 def _get_trimmed_index(message: str, start_idx: int, end_idx: int) -> int:

@@ -12,6 +12,7 @@ from .base import (
     AnswerChoiceToken,
     CompletionUsage,
     CompletionFailure,
+    SOReflectionScoreConfigType,
 )
 
 __all__ = [
@@ -28,4 +29,5 @@ __all__ = [
     "CompletionUsage",
     "CompletionFailure",
     "CompletionParams",
+    "SOReflectionScoreConfigType",
 ]

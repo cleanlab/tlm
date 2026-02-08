@@ -2,7 +2,13 @@ from pydantic import BaseModel, Field
 from typing import Any, Callable
 from litellm.litellm_core_utils.get_supported_openai_params import get_supported_openai_params
 
-from .base import ExtractedResponseField, RegexPattern, AnswerChoiceToken, CompletionParams
+from .base import (
+    ExtractedResponseField,
+    RegexPattern,
+    AnswerChoiceToken,
+    CompletionParams,
+    SOReflectionScoreConfigType,
+)
 
 from tlm.config.models import MODELS_WITH_LOGPROBS
 from tlm.config.provider import ModelProvider
@@ -33,6 +39,14 @@ class CompletionTemplate(BaseModel):
     per_field_score_key: str | None = Field(
         default=None,
         description="Key in each field of the completion response schema that contains the reflection score",
+    )
+    so_reflection_score_config_type: SOReflectionScoreConfigType | None = Field(
+        default=None,
+        description="Type of score configuration for the structured output reflection score",
+    )
+    so_overall_score_key_name: str | None = Field(
+        default=None,
+        description="Key in the completion response schema that contains the overall reflection score (for incorrect fields scoring)",
     )
     use_logprobs: bool | None = Field(
         default=None,

@@ -49,6 +49,7 @@ class SelfReflectionCompletionGenerator(Component):
                             template_kwargs=template_kwargs,
                             temperature=0.0,
                             response_format_model=template.construct_response_format(answer),
+                            reference_answer=answer,
                         )
                     )
                     for template in self.completion_templates
