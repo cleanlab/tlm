@@ -3,6 +3,7 @@ from typing import Any
 import asyncio
 import sys
 from openai.types.chat import ChatCompletion
+from openai.lib._parsing._completions import type_to_response_format_param
 
 from tlm.config.base import BaseConfig
 from tlm.config.schema import Config
@@ -162,6 +163,10 @@ class TLM:
         )
         model = openai_kwargs.get("model")
         config = BaseConfig.from_input(self.config, workflow_type, model)
+
+        if openai_kwargs.get("response_format"):
+            openai_kwargs["response_format"] = type_to_response_format_param(openai_kwargs["response_format"])
+
         return await tlm_inference(
             completion_params=openai_kwargs,
             response=response,
