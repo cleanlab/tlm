@@ -88,7 +88,7 @@ nav:
     # - Custom Evaluation Criteria: tutorials/tlm_custom_eval/index.ipynb
     # - Chat Completions API: tutorials/tlm_chat_completion/index.ipynb
     # - OpenAI Responses API: tutorials/tlm_responses/index.ipynb
-    # - Structured Outputs: tutorials/tlm_structured_outputs/index.ipynb
+    - Structured Outputs: tutorials/tlm_structured_outputs/index.ipynb
     # - Tool Calls: tutorials/tlm_tool_calls/index.ipynb
   - API Reference:
     - TLM: api/tlm.md
