@@ -7,6 +7,9 @@ from tlm.config.defaults import get_settings
 defaults = get_settings()
 
 OBSERVED_CONSISTENCY_EXPLANATION_TEMPLATE = "This response is untrustworthy due to lack of consistency in possible responses from the model. Here's one inconsistent alternate response that the model considered (which may not be accurate either): \n{observed_consistency_completion}"
+HIGH_CONFIDENCE_MESSAGE = "Did not find a reason to doubt trustworthiness."
+NO_SELF_REFLECTION_EXPLANATION_MESSAGE = "Cannot verify that this response is correct.\n"
+FALLBACK_EXPLANATION_MESSAGE = "The prompt/response appear atypical or vague."
 
 
 def get_explainability_message(
@@ -48,7 +51,7 @@ def get_explainability_message(
                 explainability_message += self_reflection_explanation
                 explainability_message += _add_punctuation_if_necessary(explainability_message) + "\n"
             else:
-                explainability_message += "Cannot verify that this response is correct.\n"
+                explainability_message += NO_SELF_REFLECTION_EXPLANATION_MESSAGE
 
         if (
             not np.isnan(average_consistency_score)
@@ -66,11 +69,11 @@ def get_explainability_message(
         if (
             len(explainability_message) < 5
         ):  # the explainability score is low but neither self_reflection or observed_consistency contribute to this issue or we parsed out all relevant text (there are less than 5 characters left).
-            explainability_message = "The prompt/response appear atypical or vague."
+            explainability_message = FALLBACK_EXPLANATION_MESSAGE
 
         cleaned_explainability_message = explainability_message.strip()
     else:
-        cleaned_explainability_message = "Did not find a reason to doubt trustworthiness."
+        cleaned_explainability_message = HIGH_CONFIDENCE_MESSAGE
 
     return cleaned_explainability_message
 
