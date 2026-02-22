@@ -10,6 +10,7 @@ from tlm.config.schema import Config
 from tlm.config.presets import WorkflowType
 from tlm.inference import InferenceResult, tlm_inference
 from tlm.types import Eval
+from tlm.utils.structured_output_utils import _get_untrustworthy_fields
 
 
 def is_notebook() -> bool:
@@ -173,4 +174,30 @@ class TLM:
             evals=evals,
             context=context,
             config=config,
+        )
+
+    def get_untrustworthy_fields(
+        self,
+        *,
+        tlm_result: InferenceResult,
+        threshold: float = 0.8,
+        display_details: bool = True,
+    ) -> list[str]:
+        """Gets the fields of a structured output response that are considered untrustworthy by TLM.
+        Only works for responses that are valid JSON objects (uses `response_format` to specify the output format).
+        Prints detailed information about the untrustworthy fields if `display_details` is True.
+
+        Args:
+            response: The OpenAI ChatCompletion response object to evaluate
+            tlm_result: The result object from a previous TLM call
+            threshold: The threshold for considering a field untrustworthy
+            display_details (bool): Whether to display detailed information about the untrustworthy fields
+
+        Returns:
+            list[str]: The fields of the response that are considered untrustworthy by TLM
+        """
+        return _get_untrustworthy_fields(
+            tlm_result=tlm_result,
+            threshold=threshold,
+            display_details=display_details,
         )

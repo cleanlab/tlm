@@ -63,7 +63,7 @@ class WorkflowType(str, Enum):
         score: bool,
         constrain_outputs: list[str] | None = None,
     ) -> "WorkflowType":
-        if openai_args.get("response_format") is not None and score:
+        if openai_args.get("response_format") is not None:
             return cls.STRUCTURED_OUTPUT_SCORING
 
         if rag:

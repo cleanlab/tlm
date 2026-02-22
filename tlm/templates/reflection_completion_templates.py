@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, ClassVar, Literal
 import json
+import ast
 from pydantic import BaseModel, Field
 
 from tlm.types.base import SOReflectionScoreConfigType
@@ -808,7 +809,12 @@ Think through your evaluation systematically and provide clear reasoning for you
 
     @classmethod
     def construct_response_format(cls, response_json: str) -> type[BaseModel] | None:
-        response_fields = json.loads(response_json).keys()
+        try:
+            response_dict = json.loads(response_json)
+        except Exception:
+            response_dict = ast.literal_eval(response_json)
+
+        response_fields = response_dict.keys()
         ResponseFields = Literal[tuple(response_fields)]  # type: ignore
 
         class IncorrectField(BaseModel):
@@ -876,7 +882,12 @@ Output a JSON object with three fields:
 
     @classmethod
     def construct_response_format(cls, response_json: str) -> type[BaseModel] | None:
-        response_fields = json.loads(response_json).keys()
+        try:
+            response_dict = json.loads(response_json)
+        except Exception:
+            response_dict = ast.literal_eval(response_json)
+
+        response_fields = response_dict.keys()
         ResponseFields = Literal[tuple(response_fields)]  # type: ignore
 
         class IncorrectField(BaseModel):
@@ -910,8 +921,6 @@ SELF_REFLECTION_TEMPLATES_BY_WORKFLOW: dict[WorkflowType, list[type[ReflectionCo
         ReflectionRAGIssuesTemplate,
     ],
     WorkflowType.STRUCTURED_OUTPUT_SCORING: [
-        # ReflectionCertaintyTemplate,
-        # ReflectionKnowledgeGapTemplate,
         SelfReflectionSOFieldAccuracyConfig,
         SelfReflectionSOFieldKnowledgeGapConfig,
         ReflectionArgumentTemplate,

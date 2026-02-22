@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from typing import Callable
-
+import ast
 from tlm.types import FieldMetadata, Completion, SOReflectionScoreConfigType
 from tlm.utils.math_utils import make_score_asymptotic
 from tlm.config.presets import (
@@ -41,7 +41,11 @@ def extract_incorrect_fields_reflection_metadata(
     incorrect_fields_list = answer_json["incorrect_fields"]
     incorrect_field_names_and_explanations = {item["field_name"]: item["explanation"] for item in incorrect_fields_list}
 
-    field_names = json.loads(reference_answer).keys()
+    try:
+        field_names = json.loads(reference_answer).keys()
+    except Exception:
+        field_names = ast.literal_eval(reference_answer).keys()
+
     per_field_metadata = {}
 
     # construct scores and mapped scores for each field for downstream use of per-field score details
