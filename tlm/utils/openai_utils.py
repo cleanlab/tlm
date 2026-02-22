@@ -48,12 +48,12 @@ def extract_message_content(completion: Dict[str, Any]) -> str:
 def extract_structured_output_field(message_content: str, field: str) -> str | None:
     try:
         return str(ast.literal_eval(message_content)[field])
-    except Exception as e:
-        logger.warning(f"ast.literal_eval failed for message_content: {message_content}\nError: {e}")
+    except Exception:
+        pass
 
     try:
         return str(json.loads(message_content)[field])
-    except Exception as e:
-        logger.warning(f"json.loads failed for message_content: {message_content}\nError: {e}")
+    except Exception:
+        pass
 
     return None

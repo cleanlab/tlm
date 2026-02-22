@@ -280,7 +280,7 @@ def _parse_completion(completion: Completion, reference_answer: str | None = Non
 
         completion.add_response_field(
             ExtractedResponseField.MAPPED_SCORE,
-            score_mapper(unmapped_overall_score),
+            score_mapper(str(unmapped_overall_score)),
         )
 
 

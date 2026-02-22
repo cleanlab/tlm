@@ -2,7 +2,7 @@ from typing import Any, Dict
 from pydantic import BaseModel, Field, create_model
 import json
 import copy
-
+import ast
 from tlm.types import CompletionParams
 from tlm.config.defaults import get_settings
 
@@ -55,6 +55,10 @@ def add_explanation_field(schema: Dict[str, Any]) -> Dict[str, Any]:
 def construct_per_field_response_format_model(
     reference_answer: str, per_field_score_response_format: type[BaseModel]
 ) -> type[BaseModel]:
-    answer_keys = json.loads(reference_answer).keys()
+    try:
+        answer_keys = json.loads(reference_answer).keys()
+    except Exception:
+        answer_keys = ast.literal_eval(reference_answer).keys()
+
     fields = {key: (per_field_score_response_format, Field(...)) for key in answer_keys}
     return create_model(per_field_score_response_format.__name__, **fields)  # type:ignore
