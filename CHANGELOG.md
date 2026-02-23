@@ -16,7 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.2] 2026-02-22
 - Improve structured outputs functionality + tutorial
 
-[Unreleased]: https://github.com/cleanlab/tlm/compare/v0.0.2...HEAD
+## [0.0.3] 2026-02-22
+- Fix `get_untrustworthy_fields()` for score outputs
+
+[Unreleased]: https://github.com/cleanlab/tlm/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/cleanlab/tlm/commits/v0.0.3
 [0.0.2]: https://github.com/cleanlab/tlm/commits/v0.0.2
 [0.0.1]: https://github.com/cleanlab/tlm/commits/v0.0.1
 [0.0.0]: https://github.com/cleanlab/tlm/commits/v0.0.0
