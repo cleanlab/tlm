@@ -10,7 +10,17 @@ def _get_untrustworthy_fields(
     display_details: bool = True,
 ) -> list[str]:
     tlm_metadata = tlm_result["metadata"]
-    response_text = tlm_result["response"].choices[0].message.content  # type: ignore
+    response = tlm_result["response"]
+
+    # for score completions
+    if isinstance(response, dict) and "chat_completion" in response:
+        response = response["chat_completion"]
+
+    try:
+        response_text = response.choices[0].message.content  # type: ignore
+    except Exception:
+        # sometimes tlm_result["response"] is a dictionary
+        response_text = response["choices"][0]["message"]["content"]  # type: ignore
 
     if tlm_metadata is None or "per_field_score" not in tlm_metadata:
         raise ValueError(
@@ -18,16 +28,18 @@ def _get_untrustworthy_fields(
             "`get_untrustworthy_fields()` can only be called scoring structured outputs responses."
         )
 
-    try:
-        so_response = json.loads(response_text)
-    except Exception:
-        pass
-    try:
-        so_response = ast.literal_eval(response_text)
-    except Exception:
-        raise ValueError(
-            "The LLM response must be a valid JSON output (use `response_format` to specify the output format)"
-        )
+    if isinstance(response_text, dict):
+        so_response = response_text
+    else:
+        try:
+            so_response = json.loads(response_text)
+        except Exception:
+            try:
+                so_response = ast.literal_eval(response_text)
+            except Exception:
+                raise ValueError(
+                    "The LLM response must be a valid JSON output (use `response_format` to specify the output format)"
+                )
 
     per_field_score = tlm_metadata["per_field_score"]
     per_score_details = []
