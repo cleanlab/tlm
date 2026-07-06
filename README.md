@@ -20,3 +20,16 @@ data preparation/labeling work or custom model training/serving infrastructure.
 - [Example Notebooks](notebooks)
 - Learn more and see precision/recall benchmarks with frontier models (from OpenAI, Anthropic, Google, etc): <br>
 [Blog](https://cleanlab.ai/blog/), [Research Paper](https://aclanthology.org/2024.acl-long.283/)
+
+
+This code implements a more effective variant of the BSDetector LLM uncertainty-quantification method from our paper:
+
+```bibtex
+@inproceedings{bsdetector,
+  title={Quantifying uncertainty in answers from any language model and enhancing their trustworthiness},
+  author={Chen, Jiuhai and Mueller, Jonas},
+  booktitle={Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  pages={5186--5200},
+  year={2024}
+}
+```
